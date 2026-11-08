@@ -3,6 +3,7 @@
 
 import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
@@ -33,9 +34,10 @@ export function EntrySheet({ open, onOpenChange, editing, data, prefill }: Props
   const t = useTranslations("entries");
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="mx-auto max-w-md">
-        <DrawerHeader className="flex-row items-center justify-between text-left">
-          <DrawerTitle className="text-lg">{editing ? t("editTitle") : t("addTitle")}</DrawerTitle>
+      {/* Taller than the default sheet, and the title is for screen readers only: every pixel goes to the form. */}
+      <DrawerContent className="mx-auto max-w-md data-[swipe-axis=y]:[--drawer-content-max-height:calc(100dvh-1rem)]">
+        <DrawerHeader className="sr-only">
+          <DrawerTitle>{editing ? t("editTitle") : t("addTitle")}</DrawerTitle>
         </DrawerHeader>
         <EntryForm key={editing?.id ?? "new"} data={data} editing={editing} prefill={prefill} close={() => onOpenChange(false)} />
       </DrawerContent>
@@ -51,6 +53,13 @@ function EntryForm({ data, editing, prefill, close }: Pick<Props, "data" | "edit
   const form = useEntryForm(data, editing, prefill);
   const budgetLine = useBudgetLine();
   const { draft, set, setType, padField, setPadField, errors } = form;
+  // The pad steps aside once an amount is typed and the user moves on, so the fields below fit on small phones.
+  const [padOpen, setPadOpen] = useState(true);
+  const showPad = padOpen || errors.includes("amount") || errors.includes("fee");
+  const openPad = (field: "amount" | "fee") => {
+    setPadField(field);
+    setPadOpen(true);
+  };
   const isTransfer = draft.type === "transfer";
   const noTransfer = isTransfer && data.activeWallets.length < 2;
   const categories = sortByUsage(
@@ -66,6 +75,7 @@ function EntryForm({ data, editing, prefill, close }: Pick<Props, "data" | "edit
       return void toast.error(t("saveError")); // keep the sheet open so nothing typed is lost
     }
     if (!row) return;
+    if (again) setPadOpen(true);
     const alert = budgetAlert(data, row, editing?.id);
     toast.success(t("saved"), { duration: alert ? 4000 : 1500, description: alert ? budgetLine(alert) : undefined });
     if (!again) close();
@@ -81,7 +91,7 @@ function EntryForm({ data, editing, prefill, close }: Pick<Props, "data" | "edit
   const firstError = errors[0] as EntryError | undefined;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-3 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+    <div className="flex min-h-0 flex-1 flex-col gap-2 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
       <Tabs value={draft.type} onValueChange={(v) => setType(v as TransactionType)}>
         <TabsList className="w-full group-data-horizontal/tabs:h-11">
           {TYPES.map((type) => (
@@ -94,9 +104,9 @@ function EntryForm({ data, editing, prefill, close }: Pick<Props, "data" | "edit
 
       <button
         type="button"
-        onClick={() => setPadField("amount")}
+        onClick={() => openPad("amount")}
         aria-label={t("amount")}
-        className={`rounded-lg border-2 px-3 py-2 text-right ${padField === "amount" ? "border-primary" : "border-transparent"}`}
+        className={`rounded-lg border-2 px-3 py-2 text-right ${showPad && padField === "amount" ? "border-primary" : "border-transparent"}`}
       >
         <span className={`block whitespace-nowrap text-3xl font-semibold tabular-nums ${draft.amount ? "" : "text-muted-foreground"}`}>
           ৳{draft.amount ? digits(draft.amount) : digits("0")}
@@ -106,15 +116,19 @@ function EntryForm({ data, editing, prefill, close }: Pick<Props, "data" | "edit
       {isTransfer && (
         <button
           type="button"
-          onClick={() => setPadField("fee")}
-          className={`flex min-h-11 items-center justify-between rounded-lg border-2 px-3 text-sm ${padField === "fee" ? "border-primary" : "border-transparent bg-muted"}`}
+          onClick={() => openPad("fee")}
+          className={`flex min-h-11 items-center justify-between rounded-lg border-2 px-3 text-sm ${showPad && padField === "fee" ? "border-primary" : "border-transparent bg-muted"}`}
         >
           <span>{t("fee")}</span>
           <span className="whitespace-nowrap tabular-nums">৳{digits(draft.fee || "0")}</span>
         </button>
       )}
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div
+        className="min-h-0 flex-1 overflow-y-auto"
+        onClick={() => draft.amount && setPadOpen(false)}
+        onFocus={() => draft.amount && setPadOpen(false)}
+      >
         {noTransfer ? (
           <p className="py-4 text-center text-sm text-muted-foreground">{t("needTwoWallets")}</p>
         ) : (
@@ -122,7 +136,7 @@ function EntryForm({ data, editing, prefill, close }: Pick<Props, "data" | "edit
         )}
       </div>
 
-      <NumberPad value={draft[padField]} onChange={(v) => set({ [padField]: v })} />
+      {showPad && <NumberPad value={draft[padField]} onChange={(v) => set({ [padField]: v })} />}
       {firstError && (
         <p role="alert" className="text-center text-sm text-destructive">
           {t(ERROR_KEY[firstError])}

@@ -30,7 +30,7 @@ export function NumberPad({ value, onChange }: { value: string; onChange: (v: st
           type="button"
           onClick={() => press(k)}
           aria-label={k === "⌫" ? t("backspace") : undefined}
-          className={`min-h-12 rounded-lg bg-muted text-xl font-medium tabular-nums active:bg-accent ${k === "⌫" ? "row-span-2 flex items-center justify-center" : ""}`}
+          className={`min-h-11 rounded-lg bg-muted text-xl font-medium tabular-nums active:bg-accent ${k === "⌫" ? "row-span-2 flex items-center justify-center" : ""}`}
         >
           {k === "⌫" ? <Delete className="size-6" /> : k === "-" ? "−" : banglaDigits ? toBanglaDigits(k) : k}
         </button>

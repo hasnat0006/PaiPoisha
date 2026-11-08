@@ -36,6 +36,9 @@ describe("adding and listing entries", () => {
     // amount → category → Save (wallet and date are pre-filled)
     await pad("150");
     fireEvent.click(await screen.findByRole("button", { name: "Groceries" }));
+    expect(screen.queryByRole("button", { name: "7" })).toBeNull(); // the pad steps aside so wallet/date/note fit
+    fireEvent.click(screen.getByRole("button", { name: "Amount" }));
+    expect(screen.getByRole("button", { name: "7" })).toBeTruthy(); // tapping the amount brings it back
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
     const row = await screen.findByRole("button", { name: /Groceries.*Cash.*−৳150/ });
