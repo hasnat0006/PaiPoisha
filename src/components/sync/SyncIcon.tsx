@@ -20,7 +20,7 @@ export function SyncIcon() {
   if (!syncConfigured()) return null;
   const Icon = ICONS[state];
   return (
-    <Link href="/more/" aria-label={line} className="flex size-11 shrink-0 items-center justify-center rounded-full text-muted-foreground">
+    <Link href="/more/" aria-label={line} className="flex size-11 shrink-0 items-center justify-center rounded-md text-muted-foreground">
       <Icon className={`size-5 ${state === "syncing" ? "animate-spin" : ""} ${state === "error" ? "text-destructive" : ""}`} aria-hidden />
     </Link>
   );

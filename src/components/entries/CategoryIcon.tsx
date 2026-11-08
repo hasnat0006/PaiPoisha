@@ -21,7 +21,7 @@ export function CategoryIcon({ name, color }: { name: string; color?: string }) 
   const Icon = ICONS[name] ?? Circle;
   return (
     <span
-      className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted"
+      className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted"
       style={color ? { color } : undefined}
       aria-hidden
     >

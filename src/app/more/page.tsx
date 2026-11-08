@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
-import { toast } from "sonner";
+import { notify } from "@/components/common/notify";
 import { InstallRow } from "@/components/shell/InstallRow";
 import { AccountSection } from "@/components/sync/AccountSection";
 import { QuickAddHelp } from "@/components/shell/QuickAddHelp";
@@ -34,7 +34,7 @@ export default function MorePage() {
   const { locale, setLocale, ready, banglaDigits, setBanglaDigits } = useLocale();
   const { theme, setTheme } = useTheme();
   const state = useEntries(ready ? t("entries.cashWallet") : null);
-  const saveError = () => toast.error(t("wallets.saveError"));
+  const saveError = () => notify.error(t("common.saveError"));
   const changeStartDay = (day: number) => setMonthStartDay(day, locale).catch(saveError);
   const changeLanguage = () => {
     const l = locale === "bn" ? "en" : "bn";

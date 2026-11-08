@@ -4,7 +4,7 @@
 import { LogOut } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { toast } from "sonner";
+import { notify } from "@/components/common/notify";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,7 +36,7 @@ export function SignOutDialog({ className }: { className: string }) {
     try {
       await (await import("@/sync/auth")).signOutAndWipe(); // reloads the app
     } catch {
-      toast.error(t("account.signOutError"));
+      notify.error(t("account.signOutError"));
       setBusy(false);
     }
   };

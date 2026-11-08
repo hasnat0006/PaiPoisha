@@ -16,3 +16,7 @@ vi.mock("next/navigation", () => ({
 // findBy*/waitFor: allow time for lazy chunks (the add sheet) when all test files run in parallel on a cold cache.
 import { configure } from "@testing-library/react";
 configure({ asyncUtilTimeout: 10_000 });
+
+// localStorage outlives a test inside a file: an add-sheet draft left by one test must not fill the next one's sheet.
+import { beforeEach } from "vitest";
+beforeEach(() => localStorage.removeItem("mm.entryDraft"));

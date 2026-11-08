@@ -3,7 +3,7 @@
 
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { toast } from "sonner";
+import { notify } from "@/components/common/notify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { Wallet } from "@/db/types";
@@ -21,30 +21,32 @@ interface Props {
 
 export function WalletManage({ wallet, balance, data, done }: Props) {
   const t = useTranslations("wallets");
+  const tc = useTranslations("common");
   const { formatMoney } = useMoney();
   const [real, setReal] = useState("");
   const [badAmount, setBadAmount] = useState(false);
 
-  const run = async (action: () => Promise<unknown>, message: string) => {
+  const run = async (action: () => Promise<unknown>, message: string, failure: "saveError" | "deleteError" = "saveError") => {
     try {
       await action();
-      toast.success(message, { duration: 1500 });
+      notify.success(message);
       done();
     } catch {
-      toast.error(t("saveError"));
+      notify.error(tc(failure));
     }
   };
 
   const adjust = async () => {
     const value = parseSignedAmount(real);
-    if (value === null) return setBadAmount(true);
+    const invalid = () => (setBadAmount(true), notify.invalid(t("errAdjust")));
+    if (value === null) return invalid();
     try {
       if (await adjustBalance(wallet, balance, value, data)) {
-        toast.success(t("adjusted"), { duration: 1500 });
+        notify.success(t("adjusted"));
         done();
-      } else setBadAmount(true);
+      } else invalid();
     } catch {
-      toast.error(t("saveError"));
+      notify.error(tc("saveError"));
     }
   };
 
@@ -89,7 +91,7 @@ export function WalletManage({ wallet, balance, data, done }: Props) {
             {t("archive")}
           </Button>
         )}
-        <Button variant="destructive" className="min-h-11 flex-1" disabled={!deletable} onClick={() => run(() => deleteWallet(wallet, data), t("deleted"))}>
+        <Button variant="destructive" className="min-h-11 flex-1" disabled={!deletable} onClick={() => run(() => deleteWallet(wallet, data), t("deleted"), "deleteError")}>
           {t("delete")}
         </Button>
       </div>

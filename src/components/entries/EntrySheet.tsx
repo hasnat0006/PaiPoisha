@@ -5,6 +5,7 @@ import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
+import { notify } from "@/components/common/notify";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -73,17 +74,23 @@ function EntryForm({ data, editing, prefill, close }: Pick<Props, "data" | "edit
     try {
       row = await form.save(again);
     } catch {
-      return void toast.error(t("saveError")); // keep the sheet open so nothing typed is lost
+      return void notify.error(tc("saveError")); // keep the sheet open so nothing typed is lost
     }
-    if (!row) return;
+    if ("errors" in row) return void notify.invalid(t(ERROR_KEY[row.errors[0]]));
     const alert = budgetAlert(data, row, editing?.id);
-    toast.success(t("saved"), { duration: alert ? 4000 : 1500, description: alert ? budgetLine(alert) : undefined });
+    notify.success(t("saved"), alert ? { duration: 4000, description: budgetLine(alert) } : undefined);
     if (!again) close();
   };
   const remove = async () => {
-    const undo = await form.remove();
+    let undo: () => Promise<void>;
+    try {
+      undo = await form.remove();
+    } catch {
+      return void notify.error(tc("deleteError")); // the sheet stays open
+    }
     close();
-    toast(t("deleted"), { duration: 5000, action: { label: tc("undo"), onClick: () => void undo() } });
+    const restore = () => undo().catch(() => notify.error(tc("undoError")));
+    toast(t("deleted"), { duration: 5000, action: { label: tc("undo"), onClick: () => void restore() } });
   };
 
   const digits = (s: string) => (banglaDigits ? toBanglaDigits(s) : s).replace(/-/g, "−");

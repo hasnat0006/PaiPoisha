@@ -9,7 +9,8 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { createContext, useContext, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { notify } from "@/components/common/notify";
+import { useSyncToasts } from "@/components/sync/useSyncToasts";
 import { Button } from "@/components/ui/button";
 import { db } from "@/db/db";
 import type { Transaction } from "@/db/types";
@@ -61,6 +62,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [prefill, setPrefill] = useState<Partial<EntryDraft>>();
   useServiceWorker();
+  useSyncToasts();
   const { resolvedTheme, setTheme } = useTheme();
 
   useEffect(() => {
@@ -91,7 +93,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           setBanglaDigits(r.settings.bangla_digits);
           setTheme(r.settings.theme);
         }
-        if (r.hadCloud && r.added > 0) toast.success(t("sync.merged", { count: r.added }));
+        if (r.hadCloud && r.added > 0) notify.success(t("sync.merged", { count: r.added }), { duration: 4000 }); // a summary: give it time
       }),
     [t, setLocale, setBanglaDigits, setTheme],
   );
@@ -132,7 +134,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex flex-1 flex-col pb-[calc(max(0.75rem,env(safe-area-inset-bottom))+5rem)]">{children}</div>
       {state.status === "ready" && (
         <Button
-          className="fixed right-[max(1rem,calc(50%-14rem+1rem))] bottom-[calc(max(0.75rem,env(safe-area-inset-bottom))+4.25rem)] z-40 size-14 rounded-full shadow-lg glass! [--glass-tint:var(--primary)]"
+          className="fixed right-[max(1rem,calc(50%-14rem+1rem))] bottom-[calc(max(0.75rem,env(safe-area-inset-bottom))+4.25rem)] z-40 size-14 rounded-md shadow-lg glass! [--glass-tint:var(--primary)]"
           onClick={() => openEntry(null)}
           aria-label={t("entries.add")}
         >

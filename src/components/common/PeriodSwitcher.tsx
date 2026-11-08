@@ -16,7 +16,7 @@ export function PeriodSwitcher({ period, startDay, onChange }: Props) {
   const format = useFormatter();
   const isCurrent = period.key >= getPeriod(new Date(), startDay).key;
   const label = format.dateTime(new Date(`${period.key}-15T12:00:00+06:00`), { month: "long", year: "numeric" });
-  const btn = "flex size-11 items-center justify-center rounded-full disabled:opacity-30";
+  const btn = "flex size-11 items-center justify-center rounded-md disabled:opacity-30";
   return (
     <div className="flex items-center justify-between">
       <button type="button" className={btn} onClick={() => onChange(shiftPeriod(period.key, -1, startDay))} aria-label={t("previous")}>

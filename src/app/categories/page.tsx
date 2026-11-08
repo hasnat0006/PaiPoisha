@@ -4,8 +4,8 @@
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { toast } from "sonner";
 import { SortableCategoryList } from "@/components/categories/SortableCategoryList";
+import { notify } from "@/components/common/notify";
 import { PageHeader } from "@/components/common/PageHeader";
 import { LoadError, LoadingRows } from "@/components/common/ScreenState";
 import { Button } from "@/components/ui/button";
@@ -50,7 +50,7 @@ export default function CategoriesPage() {
             key={type} // a fresh list per tab
             list={listFor(type, state)}
             onEdit={edit}
-            onReorder={(list) => saveCategoryOrder(list).catch(() => toast.error(t("wallets.saveError")))}
+            onReorder={(list) => saveCategoryOrder(list).catch(() => notify.error(t("common.saveError")))}
           />
           <Button className="min-h-11 text-base" onClick={() => edit(null)}>
             {t("categories.add")}

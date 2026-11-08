@@ -75,7 +75,7 @@ export function FilterBar({ f, set, data }: { f: Filters; set: (c: Partial<Filte
                 type="button"
                 onClick={() => set(c.clear)}
                 aria-label={t("removeFilter", { name: c.label })}
-                className="flex min-h-11 items-center gap-1 rounded-full bg-primary/10 px-3 text-sm"
+                className="flex min-h-11 items-center gap-1 rounded-md bg-primary/10 px-3 text-sm"
               >
                 {c.label}
                 <X className="size-4" aria-hidden />

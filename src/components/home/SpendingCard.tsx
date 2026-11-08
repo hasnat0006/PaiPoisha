@@ -13,7 +13,7 @@ import type { Slice } from "./SpendingChart";
 
 const SpendingChart = dynamic(() => import("./SpendingChart"), {
   ssr: false,
-  loading: () => <div className="size-40 animate-pulse rounded-full bg-muted" />,
+  loading: () => <div className="size-40 animate-pulse rounded-md bg-muted" />,
 });
 
 const OTHERS_COLOR = "#94a3b8";
@@ -44,7 +44,7 @@ export function SpendingCard({ data, inPeriod, period }: { data: EntriesData; in
           {slices.map((s) => (
             <li key={s.id ?? "others"}>
               <button type="button" onClick={() => open(s)} className="flex min-h-11 w-full items-center gap-2 text-left text-sm">
-                <span className="size-3 shrink-0 rounded-full" style={{ background: s.fill }} aria-hidden />
+                <span className="size-3 shrink-0 rounded-md" style={{ background: s.fill }} aria-hidden />
                 <span className="min-w-0 flex-1 truncate">{s.name}</span>
                 <span className="whitespace-nowrap tabular-nums">{formatMoney(s.spent)}</span>
               </button>

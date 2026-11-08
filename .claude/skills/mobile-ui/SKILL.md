@@ -22,12 +22,15 @@ The target is a **360 px-wide, ~3 GB RAM Android phone, often on a slow connecti
 - Tap targets of at least 44 × 44 px (`min-h-11 min-w-11`).
 - Text: body `text-base`, labels `text-sm`, totals `text-2xl font-semibold tabular-nums`. Never smaller than `text-xs`.
 - Amounts always get `whitespace-nowrap tabular-nums`, so "+৳1,23,456" never breaks across lines; shrink the text size instead.
+- Corners: **only `rounded-md`** (user, 2026-11-08). No pills or circles (`rounded-full`); every radius token maps to md in `globals.css`.
 
 ## The add-entry sheet (the most important screen)
 
 - Opens instantly from the + button. Amount first, with **our own number pad**: don't focus a text input (the phone keyboard covers the sheet).
 - Target: **amount + 3 taps** to save an expense (spec §3).
 - Remembers the last wallet used. Date defaults to today.
+- Fields are labelled rows: `Category [Select category]`, `Wallet [bKash ▾]` (themed `FieldSelect` dropdowns, not native `<select>`), `Date [Today] [picker]`, then the note.
+- An unsaved new entry is kept for 2 minutes after closing (`features/entries/entryDraft.ts`).
 
 ## Colours
 

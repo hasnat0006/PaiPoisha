@@ -138,8 +138,8 @@ Adding a typical expense takes the amount plus at most 3 taps: amount → catego
 - Tabs at the top: Expense (default) · Income · Transfer
 - Large amount display with the app's own number pad (0–9, decimal point, backspace, and + and − for quick sums like 120+80)
 - Category grid: the 8 most-used categories first, then "More"
-- Wallet chips: defaults to the wallet used last
-- Date: defaults to today; chips for Today and Yesterday, or a date picker
+- Wallet dropdown (From/To for transfers): defaults to the wallet used last
+- Date: defaults to today; a Today button and a date picker
 - Note: optional, up to 100 characters
 - Save button, plus "Save & add another"
 
@@ -399,7 +399,7 @@ Seven screens, with a bottom tab bar (Home · Transactions · Budgets · More) a
 | --- | --- |
 | Onboarding | Choose a language → pick wallets and opening balances → optional Google sign-in |
 | Home | Month total spent vs income, wallet balances, spending by category, last 5 entries |
-| Add / edit entry | Bottom sheet: number pad for the amount, category grid, wallet chips, date, note |
+| Add / edit entry | Bottom sheet: number pad for the amount, labelled rows for category and wallet dropdowns, date (Today + picker), note |
 | Transactions | Grouped by day; filter by month, wallet, category; search |
 | Budgets | Bar per category: spent / limit, turns red over 90% |
 | Wallets | List with balances; add, edit, archive |

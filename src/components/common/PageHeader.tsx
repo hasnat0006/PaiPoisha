@@ -9,7 +9,7 @@ export function PageHeader({ title, children }: { title: string; children?: Reac
   const t = useTranslations("common");
   return (
     <header className="flex items-center gap-2">
-      <Link href="/more/" aria-label={t("back")} className="flex size-11 items-center justify-center rounded-full">
+      <Link href="/more/" aria-label={t("back")} className="flex size-11 items-center justify-center rounded-md">
         <ArrowLeft className="size-5" />
       </Link>
       <h1 className="flex-1 text-xl font-semibold">{title}</h1>

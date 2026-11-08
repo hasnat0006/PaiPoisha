@@ -3,8 +3,8 @@
 
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { toast } from "sonner";
 import { LookPicker } from "@/components/common/LookPicker";
+import { notify } from "@/components/common/notify";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
@@ -50,15 +50,19 @@ function CategoryForm({ category, type, data, done }: Omit<Props, "open" | "onOp
     setNoName(false);
   };
 
-  const run = async (action: () => Promise<unknown>) => {
+  const run = async (action: () => Promise<unknown>, message: string, failure: "saveError" | "deleteError" = "saveError") => {
     try {
       await action();
+      notify.success(message);
       done();
     } catch {
-      toast.error(t("saveError"));
+      notify.error(tc(failure));
     }
   };
-  const save = () => (cleanNames(d) ? run(() => saveCategory(d, type, data, category?.id)) : setNoName(true));
+  const save = () => {
+    if (!cleanNames(d)) return (setNoName(true), notify.invalid(t("nameHint")));
+    void run(() => saveCategory(d, type, data, category?.id), category ? t("updated") : t("added"));
+  };
 
   return (
     <div className="flex flex-col gap-3 overflow-y-auto p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
@@ -89,14 +93,14 @@ function CategoryForm({ category, type, data, done }: Omit<Props, "open" | "onOp
       </Button>
       {category && (
         <div className="flex gap-2">
-          <Button variant="outline" className="min-h-11 flex-1" onClick={() => run(() => setHidden(category, !category.hidden))}>
+          <Button variant="outline" className="min-h-11 flex-1" onClick={() => run(() => setHidden(category, !category.hidden), category.hidden ? t("shownToast") : t("hiddenToast"))}>
             {category.hidden ? t("show") : t("hide")}
           </Button>
           <Button
             variant="destructive"
             className="min-h-11 flex-1"
             disabled={!canDeleteCategory(category, data)}
-            onClick={() => run(() => deleteCategory(category, data))}
+            onClick={() => run(() => deleteCategory(category, data), t("deleted"), "deleteError")}
           >
             {tc("delete")}
           </Button>

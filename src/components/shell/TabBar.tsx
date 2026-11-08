@@ -18,7 +18,7 @@ export function TabBar() {
   const path = (usePathname() ?? "/").replace(/\/$/, "") || "/";
   return (
     <nav className="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-30 px-4">
-      <ul className="mx-auto flex max-w-sm rounded-full border p-1 shadow-lg glass">
+      <ul className="mx-auto flex max-w-sm rounded-md border p-1 shadow-lg glass">
         {TABS.map(({ href, key, icon: Icon, match }) => {
           const active = match.some((m) => (m === "/" ? path === "/" : path.startsWith(m)));
           return (
@@ -26,7 +26,7 @@ export function TabBar() {
               <Link
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className={`flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-full text-xs ${active ? "bg-primary/10 font-semibold text-primary" : "text-muted-foreground"}`}
+                className={`flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-md text-xs ${active ? "bg-primary/10 font-semibold text-primary" : "text-muted-foreground"}`}
               >
                 <Icon className="size-5" aria-hidden />
                 {t(key)}

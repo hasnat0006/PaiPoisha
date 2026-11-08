@@ -1,4 +1,5 @@
-// The middle of the add sheet: category dropdown (or From/To for transfers), wallet chips, date and note.
+// The middle of the add sheet, one labelled row each (user, 2026-11-08): category (or From/To for transfers)
+// and wallet as dropdowns, then the date (Today or any picked day) and the note.
 "use client";
 
 import { useTranslations } from "next-intl";
@@ -6,9 +7,9 @@ import type { Category } from "@/db/types";
 import type { EntriesData } from "@/features/entries/useEntries";
 import type { useEntryForm } from "@/features/entries/useEntryForm";
 import { useLocale } from "@/i18n/provider";
-import { addDays, dhakaDay, NOTE_MAX } from "@/lib/entries";
-import { CategorySelect } from "./CategorySelect";
-import { ChipGroup } from "./ChipGroup";
+import { categoryName, dhakaDay, NOTE_MAX } from "@/lib/entries";
+import { CategoryIcon } from "./CategoryIcon";
+import { FIELD_LABEL, FieldSelect } from "./FieldSelect";
 
 interface Props {
   data: EntriesData;
@@ -21,54 +22,60 @@ export function EntryFields({ data, form, categories }: Props) {
   const { locale } = useLocale();
   const { draft, set, errors } = form;
   const today = dhakaDay(new Date());
-  const wallets = data.activeWallets.map((w) => ({ id: w.id, label: w.name }));
+  const wallets = data.activeWallets.map((w) => ({ id: w.id, label: w.name, icon: <CategoryIcon name={w.icon} color={w.color} /> }));
   const isTransfer = draft.type === "transfer";
+  const walletsInvalid = errors.includes("wallets");
 
   return (
     <div className="flex flex-col gap-3">
       {!isTransfer && (
-        <CategorySelect
-          categories={categories}
+        <FieldSelect
+          label={t("category")}
+          placeholder={t("selectCategory")}
+          options={categories.map((c) => ({ id: c.id, label: categoryName(c, locale), icon: <CategoryIcon name={c.icon} color={c.color} /> }))}
           value={draft.categoryId}
           onChange={(categoryId) => set({ categoryId })}
           invalid={errors.includes("category")}
         />
       )}
-      <ChipGroup
+      <FieldSelect
         label={isTransfer ? t("from") : t("wallet")}
+        placeholder={t("selectWallet")}
         options={wallets}
         value={draft.walletId}
         onChange={(walletId) => set({ walletId })}
-        invalid={errors.includes("wallets")}
+        invalid={walletsInvalid}
       />
       {isTransfer && (
-        <ChipGroup
+        <FieldSelect
           label={t("to")}
+          placeholder={t("selectWallet")}
           options={wallets}
           value={draft.toWalletId}
           onChange={(toWalletId) => set({ toWalletId })}
-          invalid={errors.includes("wallets")}
+          invalid={walletsInvalid}
         />
       )}
-      <ChipGroup
-        label={t("date")}
-        options={[
-          { id: today, label: t("today") },
-          { id: addDays(today, -1), label: t("yesterday") },
-        ]}
-        value={draft.day}
-        onChange={(day) => set({ day })}
-      >
+      <div role="group" aria-label={t("date")} className="flex items-center gap-2">
+        <span className={FIELD_LABEL} aria-hidden>{t("date")}</span>
+        <button
+          type="button"
+          aria-pressed={draft.day === today}
+          onClick={() => set({ day: today })}
+          className="min-h-11 shrink-0 rounded-md border px-4 text-sm aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground"
+        >
+          {t("today")}
+        </button>
         <input
           type="date"
           lang={locale}
           max={today}
           value={draft.day}
           onChange={(e) => e.target.value && set({ day: e.target.value })}
-          aria-label={t("date")}
-          className="min-h-11 shrink-0 rounded-full border bg-background px-3 text-sm"
+          aria-label={t("pickDate")}
+          className="min-h-11 min-w-0 flex-1 rounded-md border bg-background px-3 text-sm"
         />
-      </ChipGroup>
+      </div>
       <input
         type="text"
         maxLength={NOTE_MAX}

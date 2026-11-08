@@ -3,16 +3,25 @@
 
 import { RefreshCw, UserRound } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { syncConfigured, useSyncStatus } from "@/sync/status";
+import { notify } from "@/components/common/notify";
+import { getStatus, syncConfigured, useSyncStatus } from "@/sync/status";
 import { GoogleButton } from "./GoogleButton";
 import { SignOutDialog } from "./SignOutDialog";
 import { useSyncLine } from "./useSyncLine";
-
-const syncNow = () => void import("@/sync/runner").then((m) => m.syncNow());
+import { SYNC_TOAST_ID, syncNow } from "./useSyncToasts";
 
 export function AccountSection({ row }: { row: string }) {
   const t = useTranslations("account");
+  const tAll = useTranslations();
   const { state, email, lastError } = useSyncStatus();
+  /** "Sync now" always answers with a toast (user, 2026-11-08). */
+  const onSyncNow = async () => {
+    if (!navigator.onLine) return void notify.error(tAll("welcome.needsInternet"), { id: SYNC_TOAST_ID });
+    await syncNow();
+    const s = getStatus();
+    if (s.state === "up_to_date" && !s.lastError) notify.success(tAll("sync.syncedNow"), { id: SYNC_TOAST_ID });
+    else if (s.state !== "signed_out") notify.error(tAll("sync.failed", { reason: s.lastError ?? "" }), { id: SYNC_TOAST_ID });
+  };
   const line = useSyncLine();
   if (!syncConfigured()) return null; // a build without Supabase keys runs local-only
 
@@ -37,7 +46,7 @@ export function AccountSection({ row }: { row: string }) {
             </span>
           </li>
           <li>
-            <button type="button" className={row} onClick={syncNow}>
+            <button type="button" className={row} onClick={() => void onSyncNow()}>
               <RefreshCw className={`size-5 ${state === "syncing" ? "animate-spin" : ""}`} aria-hidden />
               <span className="flex-1">{t("syncNow")}</span>
             </button>

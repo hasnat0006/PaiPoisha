@@ -3,7 +3,7 @@
 
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { toast } from "sonner";
+import { notify } from "@/components/common/notify";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
@@ -54,18 +54,19 @@ function BudgetForm({ editing, month, data, taken, onOpenChange }: Props) {
   const [bad, setBad] = useState(false);
   const categoryId = target === OVERALL ? null : target;
 
-  const run = async (action: () => Promise<void>) => {
+  const run = async (action: () => Promise<void>, message: string) => {
     try {
       await action();
+      notify.success(message);
       onOpenChange(false);
     } catch {
-      toast.error(t("saveError"));
+      notify.error(tc("saveError"));
     }
   };
   const save = () => {
     const limit = parseAmount(amount);
-    if (!isValidAmount(limit)) return setBad(true);
-    void run(() => setBudget(month, categoryId, limit));
+    if (!isValidAmount(limit)) return (setBad(true), notify.invalid(t("errLimit")));
+    void run(() => setBudget(month, categoryId, limit), t("saved"));
   };
 
   return (
@@ -100,7 +101,7 @@ function BudgetForm({ editing, month, data, taken, onOpenChange }: Props) {
         {tc("save")}
       </Button>
       {editing && (
-        <Button variant="destructive" className="min-h-11" onClick={() => run(() => removeBudget(month, editing.category_id))}>
+        <Button variant="destructive" className="min-h-11" onClick={() => run(() => removeBudget(month, editing.category_id), t("removed"))}>
           {t("remove")}
         </Button>
       )}

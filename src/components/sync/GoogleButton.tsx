@@ -4,7 +4,7 @@
 import { LogIn } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { toast } from "sonner";
+import { notify } from "@/components/common/notify";
 import { Button } from "@/components/ui/button";
 import { useOnline } from "@/sync/useOnline";
 
@@ -17,7 +17,7 @@ export function GoogleButton() {
     try {
       await (await import("@/sync/auth")).signInWithGoogle(); // the page navigates away on success
     } catch {
-      toast.error(t("signInError"));
+      notify.error(t("signInError"));
       setBusy(false);
     }
   };

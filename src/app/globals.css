@@ -48,13 +48,14 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
+  /* One corner size everywhere (user, 2026-11-08): every rounded-* class, shadcn's included, draws rounded-md. */
   --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-sm: var(--radius-md);
+  --radius-lg: var(--radius-md);
+  --radius-xl: var(--radius-md);
+  --radius-2xl: var(--radius-md);
+  --radius-3xl: var(--radius-md);
+  --radius-4xl: var(--radius-md);
 }
 
 body {
@@ -156,3 +157,64 @@ body {
     @apply font-sans;
   }
 }
+/* Toasts (user, 2026-11-08): a compact Apple-style frosted card, as wide as its text, with a small green or
+   red badge for the meaning. Overrides sonner's own CSS, which is unlayered: every selector here outranks it. */
+@media (max-width: 600px) {
+  [data-sonner-toaster].toaster { width: auto; } /* sonner makes it 100% + offset, which can't centre a narrow toast */
+}
+[data-sonner-toaster] [data-sonner-toast].toast-glass {
+  --toast-tint: var(--popover);
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: fit-content;
+  max-width: 100%;
+  padding: 10px 10px 10px 12px;
+  gap: 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid oklch(1 0 0 / 55%);
+  color: var(--foreground);
+  font-size: 14px;
+  background: color-mix(in oklch, var(--toast-tint) 95%, transparent);
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 50%), 0 0 0 0.5px oklch(0 0 0 / 6%), 0 12px 32px -10px oklch(0 0 0 / 22%);
+  @supports (backdrop-filter: blur(1px)) {
+    background: color-mix(in oklch, var(--toast-tint) 62%, transparent);
+    backdrop-filter: blur(24px) saturate(180%);
+  }
+  @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+    background: var(--toast-tint);
+    backdrop-filter: none;
+  }
+}
+.dark [data-sonner-toaster] [data-sonner-toast].toast-glass {
+  --toast-tint: oklch(0.3 0.004 286); /* a lifted grey, not near-black, so it floats above the dark page */
+  border-color: oklch(1 0 0 / 12%);
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 10%), 0 12px 32px -10px oklch(0 0 0 / 50%);
+}
+[data-sonner-toaster] [data-sonner-toast].toast-glass [data-icon] { width: 24px; height: 24px; margin: 0; }
+[data-sonner-toaster] [data-sonner-toast].toast-glass [data-title] { font-weight: 600; line-height: 1.35; }
+[data-sonner-toaster] [data-sonner-toast].toast-glass [data-description] { color: var(--muted-foreground); font-size: 13px; }
+[data-sonner-toaster] [data-sonner-toast].toast-glass [data-button] {
+  height: 32px;
+  padding-inline: 14px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+/* The × sits inline at the end (sonner floats it on the corner); the ::after gives it a 44 px tap area. */
+[data-sonner-toaster] [data-sonner-toast].toast-glass [data-close-button][data-close-button] {
+  position: relative;
+  inset: auto;
+  transform: none;
+  order: 10;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: var(--radius-md);
+  color: var(--muted-foreground);
+  background: color-mix(in oklch, var(--foreground) 7%, transparent);
+}
+[data-sonner-toaster] [data-sonner-toast].toast-glass [data-close-button]::after { content: ""; position: absolute; inset: -8px; }

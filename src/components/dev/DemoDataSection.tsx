@@ -6,7 +6,7 @@ import { Database, Trash2 } from "lucide-react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { toast } from "sonner";
+import { notify } from "@/components/common/notify";
 import { db } from "@/db/db";
 import { addDemoData, removeDemoData } from "@/features/demo/demoData";
 import { useSyncStatus } from "@/sync/status";
@@ -21,9 +21,9 @@ export function DemoDataSection({ row }: { row: string }) {
   const run = async (fn: () => Promise<string>) => {
     setBusy(true);
     try {
-      toast.success(await fn());
+      notify.success(await fn());
     } catch {
-      toast.error(t("error"));
+      notify.error(t("error"));
     } finally {
       setBusy(false);
     }

@@ -28,10 +28,10 @@ export function LookPicker({ color, icon, onChange }: Props) {
             aria-checked={c === color}
             aria-label={t("colorN", { n: i + 1 })}
             onClick={() => onChange({ color: c })}
-            className="flex size-11 items-center justify-center rounded-full"
+            className="flex size-11 items-center justify-center rounded-md"
           >
             <span
-              className="size-8 rounded-full"
+              className="size-8 rounded-md"
               style={{ background: c, outline: c === color ? `2px solid ${c}` : undefined, outlineOffset: 2 }}
             />
           </button>

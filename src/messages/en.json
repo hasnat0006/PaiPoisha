@@ -12,7 +12,11 @@
     "seeAll": "See all",
     "retry": "Retry",
     "close": "Close",
-    "back": "Back"
+    "back": "Back",
+    "saveError": "Couldn’t save. Please try again",
+    "deleteError": "Couldn’t delete. Please try again",
+    "undoError": "Couldn’t undo. Please try again",
+    "notifications": "Notifications"
   },
   "home": {
     "income": "Income",
@@ -49,11 +53,14 @@
     "amount": "Amount",
     "fee": "Fee (optional)",
     "category": "Category",
+    "selectCategory": "Select category",
+    "selectWallet": "Select wallet",
     "wallet": "Wallet",
     "from": "From",
     "to": "To",
     "date": "Date",
     "today": "Today",
+    "pickDate": "Pick a date",
     "yesterday": "Yesterday",
     "note": "Note (optional)",
     "saveAndAdd": "Save & add another",
@@ -68,8 +75,7 @@
     "deleted": "Entry deleted",
     "loadError": "Couldn’t load your entries",
     "feeLine": "Fee {amount}",
-    "cashWallet": "Cash",
-    "saveError": "Couldn’t save. Please try again"
+    "cashWallet": "Cash"
   },
   "manage": {
     "color": "Colour",
@@ -119,7 +125,6 @@
     "opening": "Opening balance",
     "errName": "Enter a wallet name",
     "errAmount": "Enter a valid amount",
-    "saveError": "Couldn’t save. Please try again",
     "adjustHint": "The app shows {amount}. If your real balance is different, enter it here.",
     "realBalance": "Real balance",
     "adjust": "Adjust",
@@ -133,7 +138,9 @@
     "deleted": "Wallet deleted",
     "lastWallet": "You need at least one active wallet.",
     "hasEntries": "This wallet has entries, so it can only be archived.",
-    "archivedTitle": "Archived"
+    "archivedTitle": "Archived",
+    "added": "Wallet added",
+    "updated": "Wallet updated"
   },
   "categories": {
     "title": "Categories",
@@ -143,12 +150,16 @@
     "nameBn": "Bangla name",
     "nameEn": "English name",
     "nameHint": "One name is enough; it shows in both languages.",
-    "saveError": "Couldn’t save. Please try again",
     "show": "Show",
     "hide": "Hide",
     "hidden": "Hidden",
     "builtIn": "Built-in categories can’t be deleted, only hidden.",
-    "hasEntries": "This category has entries, so it can only be hidden."
+    "hasEntries": "This category has entries, so it can only be hidden.",
+    "added": "Category added",
+    "updated": "Category updated",
+    "hiddenToast": "Category hidden",
+    "shownToast": "Category shown",
+    "deleted": "Category deleted"
   },
   "nav": {
     "home": "Home",
@@ -188,12 +199,13 @@
     "limit": "Monthly limit",
     "errLimit": "Enter a limit",
     "remove": "Remove budget",
-    "saveError": "Couldn’t save. Please try again",
     "empty": "No budgets for this month yet",
     "nearTitle": "Budgets near the limit",
     "left": "{amount} left",
     "leftDays": "{amount} left · {days, plural, one {# day} other {# days}} to go",
-    "over": "{amount} over"
+    "over": "{amount} over",
+    "saved": "Budget saved",
+    "removed": "Budget removed"
   },
   "pwa": {
     "install": "Install the app",
@@ -217,7 +229,8 @@
     "safe": "Signing in keeps your data safe if your phone is lost.",
     "needsInternet": "Needs internet",
     "signInError": "Couldn't open Google sign-in. Please try again.",
-    "signingIn": "Signing you in…"
+    "signingIn": "Signing you in…",
+    "signInFailed": "Couldn’t sign in. Please try again."
   },
   "sync": {
     "synced": "Synced",
@@ -226,7 +239,11 @@
     "offline": "Offline · {count, plural, one {# change} other {# changes}} will sync later",
     "error": "Couldn't sync. Tap to retry",
     "signedOut": "Not backed up. Sign in to keep your data safe",
-    "merged": "Added {count, plural, one {# entry} other {# entries}} from this device."
+    "merged": "Added {count, plural, one {# entry} other {# entries}} from this device.",
+    "syncedNow": "Synced",
+    "failed": "Couldn’t sync: {reason}",
+    "failedShort": "Couldn’t sync",
+    "recovered": "Synced again"
   },
   "account": {
     "title": "Account",

@@ -5,6 +5,7 @@
 import { db } from "@/db/db";
 import { supabase } from "@/lib/supabase";
 import { pendingCount } from "./engine";
+import { DRAFT_KEY } from "@/features/entries/entryDraft";
 import { WELCOME_KEY } from "@/lib/welcome";
 import { syncNow } from "./runner";
 
@@ -40,6 +41,7 @@ export async function signOutAndWipe(go: (url: string) => void = (url) => window
   await db.delete();
   try {
     localStorage.removeItem(WELCOME_KEY);
+    localStorage.removeItem(DRAFT_KEY); // an unsaved amount or note must not show to the next person
   } catch {
     /* private mode */
   }

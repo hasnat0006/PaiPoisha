@@ -20,7 +20,7 @@ export function ChipGroup({ label, options, value, onChange, invalid, children }
           type="button"
           aria-pressed={o.id === value}
           onClick={() => onChange(o.id)}
-          className={`min-h-11 shrink-0 rounded-full border px-4 text-sm aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground ${invalid ? "border-destructive" : ""}`}
+          className={`min-h-11 shrink-0 rounded-md border px-4 text-sm aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground ${invalid ? "border-destructive" : ""}`}
         >
           {o.label}
         </button>

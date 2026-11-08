@@ -5,6 +5,7 @@ import { Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { notify } from "@/components/common/notify";
 import { Button } from "@/components/ui/button";
 
 export function QuickAddHelp() {
@@ -16,7 +17,7 @@ export function QuickAddHelp() {
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(link);
-      toast.success(t("copied"), { duration: 1500 });
+      notify.success(t("copied"));
     } catch {
       toast(t("copyManually")); // clipboard needs HTTPS; the link stays selectable below
     }

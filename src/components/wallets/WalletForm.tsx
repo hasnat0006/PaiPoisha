@@ -3,8 +3,8 @@
 
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { toast } from "sonner";
 import { LookPicker } from "@/components/common/LookPicker";
+import { notify } from "@/components/common/notify";
 import { ChipGroup } from "@/components/entries/ChipGroup";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,13 +37,15 @@ export function WalletForm({ wallet, data, done }: { wallet: Wallet | null; data
 
   const save = async () => {
     const opening = d.opening.trim() === "" ? 0 : parseSignedAmount(d.opening);
-    if (!d.name.trim()) return setError("name");
-    if (opening === null || Math.abs(opening) > MAX_AMOUNT_PAISA) return setError("opening");
+    const invalid = (e: "name" | "opening") => (setError(e), notify.invalid(e === "name" ? t("errName") : t("errAmount")));
+    if (!d.name.trim()) return invalid("name");
+    if (opening === null || Math.abs(opening) > MAX_AMOUNT_PAISA) return invalid("opening");
     try {
       await saveWallet({ ...d, opening_balance_paisa: opening }, data, wallet?.id);
+      notify.success(wallet ? t("updated") : t("added"));
       done();
     } catch {
-      toast.error(t("saveError"));
+      notify.error(tc("saveError"));
     }
   };
 

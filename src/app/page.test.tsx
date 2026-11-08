@@ -1,6 +1,6 @@
 // End-to-end-ish flow for roadmap step 2: add, edit, delete + undo, offline (Dexie only).
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AppShell } from "@/components/shell/AppShell";
 import { Toaster } from "@/components/ui/sonner";
 import { db } from "@/db/db";
@@ -22,6 +22,9 @@ const pad = async (keys: string) => {
   fireEvent.click(await screen.findByRole("button", { name: "Amount" }));
   for (const k of keys) fireEvent.click(await screen.findByRole("button", { name: k }));
 };
+/** Texts of the toasts on screen (sonner renders them outside the page tree). */
+const toasts = () => [...document.querySelectorAll("[data-sonner-toast]")].map((el) => el.textContent ?? "");
+
 const pickCategory = async (name: string) => {
   fireEvent.click(await screen.findByRole("combobox", { name: "Category" })); // also the tap that makes the pad step aside
   fireEvent.click(await screen.findByRole("option", { name }));
@@ -69,15 +72,52 @@ describe("adding and listing entries", () => {
     expect((await db.transactions.get(tx.id))?.deleted_at).toBeNull();
   });
 
+  it("keeps an unsaved entry when the sheet is closed, and starts fresh after saving it", async () => {
+    renderPage();
+    fireEvent.click(await screen.findByRole("button", { name: "Add your first expense" }));
+    await pad("75");
+    fireEvent.keyDown(document.activeElement ?? document.body, { key: "Escape" }); // close without saving
+    await waitFor(() => expect(screen.queryByRole("button", { name: "Save" })).toBeNull());
+
+    fireEvent.click(screen.getByRole("button", { name: "Add your first expense" }));
+    expect((await screen.findByRole("button", { name: "Amount" })).textContent).toContain("75"); // still there
+    await pickCategory("Groceries");
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    await screen.findByRole("button", { name: /Groceries.*−৳75/ });
+
+    fireEvent.click(screen.getByRole("button", { name: "Add entry" }));
+    expect((await screen.findByRole("button", { name: "Amount" })).textContent).toBe("৳0"); // saved: nothing kept
+  });
+
   it("asks for an amount and a category before saving", async () => {
     renderPage();
     fireEvent.click(await screen.findByRole("button", { name: "Add your first expense" }));
     fireEvent.click(await screen.findByRole("button", { name: "Save" }));
     expect(await screen.findByRole("alert")).toHaveProperty("textContent", "Enter an amount");
+    await waitFor(() => expect(toasts().join()).toContain("Enter an amount")); // inline + toast (user, 2026-11-08)
     await pad("50");
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
     await waitFor(() => expect(screen.getByRole("alert").textContent).toBe("Choose a category"));
+    await waitFor(() => expect(toasts().join()).toContain("Choose a category"));
+    expect(toasts().filter((t) => t.includes("Enter an amount"))).toHaveLength(0); // replaced, not stacked
     expect(await db.transactions.count()).toBe(0);
+  });
+
+  it("says so when an entry can't be deleted, and keeps the sheet open", async () => {
+    renderPage();
+    fireEvent.click(await screen.findByRole("button", { name: "Add your first expense" }));
+    await pad("150");
+    await pickCategory("Groceries");
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    fireEvent.click(await screen.findByRole("button", { name: /Groceries.*−৳150/ }));
+
+    // The next database update (the soft delete) fails, as on a phone that is out of storage.
+    const failing = vi.spyOn(Object.getPrototypeOf(db.transactions), "update").mockRejectedValueOnce(new Error("disk full"));
+    fireEvent.click(await screen.findByRole("button", { name: "Delete" }));
+    await waitFor(() => expect(toasts().join()).toContain("Couldn’t delete. Please try again"));
+    expect(screen.getByRole("button", { name: "Delete" })).toBeTruthy(); // still open, nothing lost
+    expect((await db.transactions.toArray())[0].deleted_at).toBeNull();
+    failing.mockRestore();
   });
 
   it("explains that a transfer needs a second wallet", async () => {
