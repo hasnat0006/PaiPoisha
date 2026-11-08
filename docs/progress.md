@@ -6,7 +6,7 @@ Roadmap from `docs/mvp-plan.md`. Tick a step only when `npm run check` passes an
 
 - [x] 1. Set up: Next.js + TypeScript + Tailwind + next-intl + static export; base data layer (types, Dexie, repo), money helpers, SQL migration, CLAUDE.md and skills
   - [x] 1b. Run `npx shadcn@latest init` (done in step 2: base-nova preset, Base UI)
-  - [ ] 1c. Deploy a first page (Vercel Hobby or Cloudflare Pages)
+  - [x] 1c. Deploy a first page (Vercel Hobby or Cloudflare Pages) — live at https://paipoisha.vercel.app/
 - [x] 2. Add and list transactions offline (no login): spec §3
 - [x] 3. Wallets, categories (bilingual defaults) and wallet balances: spec §2, §4
 - [x] 4. Home dashboard and the transaction list with filters: spec §6, §7
