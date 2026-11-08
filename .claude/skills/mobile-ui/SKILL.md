@@ -47,7 +47,7 @@ The target is a **360 px-wide, ~3 GB RAM Android phone, often on a slow connecti
 ## Performance
 
 - Lists over 50 items: paginate or virtualise (spec §7).
-- Import Recharts only on screens that use it (`next/dynamic` with `ssr: false`).
+- Charts are plain CSS (the spending bar). If a chart library is ever needed, load it only on its screen (`next/dynamic` with `ssr: false`).
 - No images in the MVP except icons; no animations longer than 200 ms.
 
 ## Never

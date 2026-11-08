@@ -17,15 +17,16 @@ const ICONS: Record<string, LucideIcon> = {
 /** Icons a user can pick (the last two are for system rows only). */
 export const ICON_NAMES = Object.keys(ICONS).slice(0, -2);
 
-export function CategoryIcon({ name, color }: { name: string; color?: string }) {
+/** `small`: the compact grid on Home's spending card. */
+export function CategoryIcon({ name, color, small }: { name: string; color?: string; small?: boolean }) {
   const Icon = ICONS[name] ?? Circle;
   return (
     <span
-      className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted"
+      className={`flex shrink-0 items-center justify-center rounded-md bg-muted ${small ? "size-8" : "size-10"}`}
       style={color ? { color } : undefined}
       aria-hidden
     >
-      <Icon className="size-5" />
+      <Icon className={small ? "size-4" : "size-5"} />
     </span>
   );
 }

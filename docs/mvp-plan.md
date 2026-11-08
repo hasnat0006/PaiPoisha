@@ -26,7 +26,7 @@ The app is local-first: every entry is saved on the phone first (it works offlin
 | Local database | Dexie (IndexedDB) | Offline storage in the browser; instant reads |
 | Login + cloud DB | Supabase (Auth with Google + Postgres) | Google login and database in one free service |
 | Languages | next-intl | Bangla/English text and number formatting |
-| Charts | Recharts | Simple dashboard charts |
+| Charts | Plain HTML/CSS bars | Recharts was dropped 2026-11-09: the only chart became a CSS bar |
 | PWA | Serwist (@serwist/next) | Install to home screen + offline caching |
 | Hosting | Vercel Hobby while building; Cloudflare later | Free; see Costs for the catch |
 | Mobile apps (later) | Capacitor | Wraps the same web code for Play Store / App Store |
@@ -208,7 +208,7 @@ Home answers "How am I doing this month?" in one screen, with no scrolling neede
 1. Period switcher: ‹ November 2026 › (swipe or tap to change)
 2. Three numbers: Income · Spent · Net (income − spent; green or red)
 3. Total balance across all active wallets, then a scrollable row of wallet cards with balances
-4. Spending by category: a donut chart of the top 5 categories plus "Others"; tapping a slice opens that category's entries
+4. Spending by category: one bar split by category, like iPhone's storage screen, then the top 5 plus "Others" in a two-column grid (category icon, name, then amount with its % of spending beside it); tapping one opens that category's entries
 5. Budgets near or over the limit (only if any exist)
 6. The last 5 entries, with "See all"
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { periodTotals, spendingByCategory, topWithOthers } from "./totals";
+import { periodTotals, sharePercents, spendingByCategory, topWithOthers } from "./totals";
 
 const ctx = { adjustmentId: "adj", feesId: "fees" };
 const e = (category_id: string, amount_paisa: number) => ({ type: "expense" as const, amount_paisa, fee_paisa: 0, category_id });
@@ -53,5 +53,19 @@ describe("topWithOthers", () => {
     const { top, others } = topWithOthers(rows);
     expect(top).toHaveLength(5);
     expect(others).toBe(7);
+  });
+});
+
+describe("sharePercents", () => {
+  it("always adds up to exactly 100", () => {
+    const shares = sharePercents([1200000, 162200, 105000, 82800, 65500, 69300]); // the demo month
+    expect(shares).toEqual([71, 10, 6, 5, 4, 4]);
+    expect(sharePercents([1, 1, 1])).toEqual([34, 33, 33]);
+    expect(sharePercents([1, 1, 1]).reduce((a, b) => a + b)).toBe(100);
+  });
+
+  it("gives a tiny share 0 (shown as <1%) and nothing when there is nothing", () => {
+    expect(sharePercents([100000, 10])).toEqual([100, 0]);
+    expect(sharePercents([0, 0])).toEqual([0, 0]);
   });
 });

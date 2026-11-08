@@ -55,5 +55,20 @@ export function topWithOthers<T extends { spent: Paisa }>(rows: T[], n = 5): { t
   return { top: rows.slice(0, n), others: rows.slice(n).reduce((s, r) => s + r.spent, 0) };
 }
 
+/**
+ * Whole-number percentages of the total that add up to exactly 100 (largest remainder), so the spending list never
+ * reads 99% or 101%. All zeros when there is nothing.
+ */
+export function sharePercents(values: Paisa[]): number[] {
+  const total = values.reduce((s, v) => s + v, 0);
+  if (total <= 0) return values.map(() => 0);
+  const exact = values.map((v) => (v * 100) / total);
+  const shares = exact.map(Math.floor);
+  let left = 100 - shares.reduce((s, v) => s + v, 0);
+  const byRemainder = exact.map((e, i) => [e - shares[i], i]).sort((a, b) => b[0] - a[0]);
+  for (const [, i] of byRemainder) if (left-- > 0) shares[i]++;
+  return shares;
+}
+
 /** Signed net of a set of entries (for day and filter totals), same rules as periodTotals. */
 export const netOf = (txs: Tx[], ctx: TotalsCtx): Paisa => periodTotals(txs, ctx).net;
