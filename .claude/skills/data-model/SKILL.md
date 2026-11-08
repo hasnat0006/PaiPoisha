@@ -25,8 +25,9 @@ The data model lives in **three places that must always match**:
    - A new table must have: `user_id uuid not null default auth.uid() references auth.users(id) on delete cascade`, the `set_updated_at` trigger, an index on `(user_id, updated_at)`, `enable row level security`, and the `"own rows"` policy (copy the pattern from `0001_init.sql`).
    - Money: `bigint`, column name ending in `_paisa`, with `check` constraints for its limits.
    - Enums: `text` + `check (col in (...))`, matching the TypeScript union exactly.
-4. **Repo and tests:** if `repo.ts` or the sync needs to know about the change, update it. Add a test that writes and reads the new field.
-5. Tell the user to run the new migration in Supabase (SQL Editor → paste the file → Run), until a Supabase CLI workflow is set up.
+4. **Sync columns:** add the column to `COLUMNS` in `src/sync/engine.ts`, and the field to the matching sample in the `COLUMNS` test in `engine.test.ts` (TypeScript and the test fail until both match). Only listed columns are uploaded: an unknown field makes Supabase reject the whole batch with a 400, which once blocked all sync.
+5. **Repo and tests:** if `repo.ts` or the sync needs to know about the change, update it. Add a test that writes and reads the new field.
+6. Run the new migration in Supabase (dev project first, then production) before shipping app code that needs it. With the Supabase connector Claude can apply it, after the user says yes for production.
 
 ## Index rules (Dexie)
 

@@ -23,7 +23,10 @@ export const canArchive = (w: Wallet, data: EntriesData) => !w.archived && !isLa
 export const canDelete = (w: Wallet, data: EntriesData) => !hasEntries(w.id, data.entries) && !isLastActive(w, data);
 
 export async function saveWallet(fields: WalletFields, data: EntriesData, id?: string): Promise<void> {
-  const row = { ...fields, name: fields.name.trim().slice(0, WALLET_NAME_MAX), provider: fields.kind === "mfs" ? fields.provider : null };
+  // Named fields only: spreading the form's draft once stored its text box ("opening") in the row, and the
+  // server rejected every upload of it (2026-11-08).
+  const { kind, color, icon, opening_balance_paisa } = fields;
+  const row = { name: fields.name.trim().slice(0, WALLET_NAME_MAX), kind, provider: kind === "mfs" ? fields.provider : null, opening_balance_paisa, color, icon };
   if (id) return updateRow<Wallet>("wallets", id, row);
   const sort_order = Math.max(-1, ...data.wallets.map((w) => w.sort_order)) + 1;
   await insertRow<Wallet>("wallets", { ...row, archived: false, sort_order });

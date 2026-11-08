@@ -43,6 +43,11 @@ describe("wallet rules", () => {
     expect(d.activeWallets.map((w) => w.name)).toEqual(["Cash", "bKash"]);
   });
 
+  it("stores only wallet fields, never the form's own (its 'opening' text box blocked sync)", async () => {
+    await saveWallet({ ...bkash, opening: "500" } as typeof bkash, await load());
+    expect((await load()).wallets[1]).not.toHaveProperty("opening");
+  });
+
   it("drops the provider for non-mobile-banking wallets", async () => {
     await saveWallet({ ...bkash, kind: "bank" }, await load());
     expect((await load()).wallets[1].provider).toBeNull();

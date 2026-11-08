@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { db } from "@/db/db";
 import { insertRow, softDelete, updateRow } from "@/db/repo";
 import { ensureSeeded } from "@/db/seed";
-import type { Category, Settings, Transaction, Wallet } from "@/db/types";
-import { BATCH, pendingCount, pull, push, syncOnce } from "./engine";
+import type { Budget, Category, Settings, Transaction, Wallet } from "@/db/types";
+import { BATCH, COLUMNS, pendingCount, pull, push, syncOnce } from "./engine";
 import { fakeRemote } from "./fakeRemote";
 
 const wallet = (name = "bKash") =>
@@ -30,6 +30,18 @@ describe("push", () => {
     expect(sent).not.toHaveProperty("_dirty"); // local-only field never leaves the phone
     expect((await db.wallets.get(w.id))!._dirty).toBe(0);
     expect(await pendingCount()).toBe(0);
+  });
+
+  it("uploads only the server's columns, so a stray local field can't block sync (2026-11-08 bug)", async () => {
+    const { remote, rowsOf } = fakeRemote();
+    const w = await insertRow<Wallet>("wallets", { name: "bKash", kind: "mfs", provider: "bkash", opening_balance_paisa: 0, color: "#e2136e", icon: "smartphone", archived: false, sort_order: 1 });
+    await db.wallets.update(w.id, { opening: "500" } as Partial<Wallet>); // what the old wallet form stored
+
+    await push(remote, "u1");
+
+    expect(rowsOf("wallets").get(w.id)).not.toHaveProperty("opening");
+    expect(rowsOf("wallets").get(w.id)).toMatchObject({ name: "bKash", user_id: "u1" });
+    expect((await db.wallets.get(w.id))?._dirty).toBe(0);
   });
 
   it("keeps a row dirty when it is edited while its upload is in flight", async () => {
@@ -173,4 +185,21 @@ it("keeps categories in the user's account intact after the merge", async () => 
   expect(rowsOf("categories").size).toBe(before); // no duplicates uploaded
   const keys = (await db.categories.toArray()).map((c: Category) => c.key);
   expect(new Set(keys).size).toBe(keys.length);
+});
+
+// A field added to a type must be added to COLUMNS too, or it would never reach the server. Each sample must list
+// every field of its type (TypeScript fails otherwise), and the test fails until COLUMNS matches.
+describe("COLUMNS", () => {
+  type Full<T> = Record<keyof Omit<T, "_dirty">, unknown>;
+  const sync = { id: 0, user_id: 0, created_at: 0, updated_at: 0, deleted_at: 0 };
+  const samples = {
+    settings: { ...sync, language: 0, bangla_digits: 0, theme: 0, month_start_day: 0 } satisfies Full<Settings>,
+    wallets: { ...sync, name: 0, kind: 0, provider: 0, opening_balance_paisa: 0, color: 0, icon: 0, archived: 0, sort_order: 0 } satisfies Full<Wallet>,
+    categories: { ...sync, key: 0, name_en: 0, name_bn: 0, type: 0, icon: 0, color: 0, is_default: 0, is_system: 0, hidden: 0, sort_order: 0 } satisfies Full<Category>,
+    transactions: { ...sync, type: 0, amount_paisa: 0, wallet_id: 0, to_wallet_id: 0, category_id: 0, fee_paisa: 0, note: 0, occurred_at: 0 } satisfies Full<Transaction>,
+    budgets: { ...sync, category_id: 0, month: 0, limit_paisa: 0 } satisfies Full<Budget>,
+  };
+  it.each(Object.keys(samples) as (keyof typeof samples)[])("%s lists every field of its type", (t) => {
+    expect([...COLUMNS[t]].sort()).toEqual(Object.keys(samples[t]).sort());
+  });
 });

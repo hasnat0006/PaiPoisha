@@ -16,14 +16,28 @@ const TIME_FIELDS = ["created_at", "updated_at", "deleted_at", "occurred_at"];
 type Row = SyncFields & Record<string, unknown>;
 const table = (t: SyncedTable) => db.table<Row, string>(t);
 
+/**
+ * The server's columns (supabase/migrations). Only these are uploaded: a field the table lacks makes the server
+ * reject the whole batch (HTTP 400), which blocked every sync after it until fixed. Add new columns here too.
+ */
+const SYNC = ["id", "user_id", "created_at", "updated_at", "deleted_at"] as const;
+export const COLUMNS: Record<SyncedTable, readonly string[]> = {
+  settings: [...SYNC, "language", "bangla_digits", "theme", "month_start_day"],
+  wallets: [...SYNC, "name", "kind", "provider", "opening_balance_paisa", "color", "icon", "archived", "sort_order"],
+  categories: [...SYNC, "key", "name_en", "name_bn", "type", "icon", "color", "is_default", "is_system", "hidden", "sort_order"],
+  transactions: [...SYNC, "type", "amount_paisa", "wallet_id", "to_wallet_id", "category_id", "fee_paisa", "note", "occurred_at"],
+  budgets: [...SYNC, "category_id", "month", "limit_paisa"],
+};
+const forServer = (t: SyncedTable, r: Row, uid: string) =>
+  Object.fromEntries(COLUMNS[t].map((c) => [c, c === "user_id" ? uid : (r[c] ?? null)])); // every row the same keys
+
 /** Upload every dirty row. A row edited while its batch was in flight stays dirty for the next cycle. */
 export async function push(remote: Remote, uid: string): Promise<void> {
   for (const t of SYNCED_TABLES) {
     const dirty = await table(t).where("_dirty").equals(1).toArray();
     for (let i = 0; i < dirty.length; i += BATCH) {
       const batch = dirty.slice(i, i + BATCH);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars -- _dirty is local only: dropped before upload
-      await remote.upsert(t, batch.map(({ _dirty, ...r }) => ({ ...r, user_id: uid })));
+      await remote.upsert(t, batch.map((r) => forServer(t, r, uid))); // _dirty and any stray field stay local
       await db.transaction("rw", table(t), async () => {
         const now = await table(t).bulkGet(batch.map((r) => r.id));
         const unchanged = batch.filter((sent, j) => now[j]?.updated_at === sent.updated_at);

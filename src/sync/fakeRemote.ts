@@ -3,6 +3,7 @@
  * updated_at itself (in Postgres' "+00:00" microsecond format) and pages by (updated_at, id).
  */
 import type { SyncedTable } from "@/db/types";
+import { COLUMNS } from "./engine";
 import type { Cursor, Remote, RemoteRow } from "./remote";
 
 export function fakeRemote(user: { id: string; email: string | null } | null = { id: "u1", email: "a@example.com" }) {
@@ -18,6 +19,13 @@ export function fakeRemote(user: { id: string; email: string | null } | null = {
     },
     async upsert(t, rows) {
       await remote.beforeUpsert?.();
+      // Like PostgREST: a column the table lacks, or rows with different keys, fail the whole batch with a 400.
+      const keys = Object.keys(rows[0] ?? {}).sort().join();
+      for (const r of rows) {
+        const stray = Object.keys(r).find((k) => !COLUMNS[t].includes(k));
+        if (stray) throw new Error(`400: Could not find the '${stray}' column of '${t}'`);
+        if (Object.keys(r).sort().join() !== keys) throw new Error("400: All object keys must match");
+      }
       upserts.push({ table: t, count: rows.length });
       const now = serverNow(); // one statement, one now(): the whole batch shares a timestamp
       for (const r of rows) rowsOf(t).set(r.id as string, { ...r, updated_at: now } as RemoteRow);
