@@ -203,5 +203,36 @@
     "copyManually": "Press and hold the link to copy it",
     "androidTitle": "Android: home-screen shortcut",
     "android": "After installing the app, press and hold its icon. Drag “Add expense” (or Add income / Transfer) onto the home screen. One tap then opens the add screen."
+  },
+  "welcome": {
+    "point1": "Cash, bKash, Nagad, Rocket and bank in one place",
+    "point2": "Works without internet",
+    "point3": "Free, in Bangla and English",
+    "google": "Continue with Google",
+    "skip": "Skip for now",
+    "safe": "Signing in keeps your data safe if your phone is lost.",
+    "needsInternet": "Needs internet",
+    "signInError": "Couldn't open Google sign-in. Please try again.",
+    "signingIn": "Signing you in…"
+  },
+  "sync": {
+    "synced": "Synced",
+    "syncedAgo": "Synced {time}",
+    "syncing": "Syncing…",
+    "offline": "Offline · {count, plural, one {# change} other {# changes}} will sync later",
+    "error": "Couldn't sync. Tap to retry",
+    "signedOut": "Not backed up. Sign in to keep your data safe",
+    "merged": "Added {count, plural, one {# entry} other {# entries}} from this device."
+  },
+  "account": {
+    "title": "Account",
+    "syncNow": "Sync now",
+    "signOut": "Sign out",
+    "signOutTitle": "Sign out?",
+    "signOutBody": "Your data stays in your account. It will be removed from this phone.",
+    "signOutUnsynced": "{count, plural, one {# change hasn't} other {# changes haven't}} synced yet and will be lost if you sign out now.",
+    "signOutAnyway": "Sign out anyway",
+    "checking": "Checking…",
+    "signOutError": "Couldn't sign out. Please try again."
   }
 }

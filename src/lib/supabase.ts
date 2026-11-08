@@ -14,6 +14,7 @@ const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 export const supabase: SupabaseClient | null =
   url && anonKey
     ? createClient(url, anonKey, {
-        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+        // PKCE: Google sends back a one-time code (not tokens in the URL); supabase-js swaps it on /auth/callback/.
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: "pkce" },
       })
     : null;

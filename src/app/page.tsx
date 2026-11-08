@@ -11,6 +11,7 @@ import { CategoryIcon } from "@/components/entries/CategoryIcon";
 import { EntryList } from "@/components/entries/EntryList";
 import { BudgetBar } from "@/components/budgets/BudgetBar";
 import { SpendingCard } from "@/components/home/SpendingCard";
+import { SyncIcon } from "@/components/sync/SyncIcon";
 import { useOpenEntry } from "@/components/shell/AppShell";
 import { Button } from "@/components/ui/button";
 import { budgetRows } from "@/features/budgets/budgetRows";
@@ -68,7 +69,12 @@ export default function HomePage() {
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-4 p-4">
-      <PeriodSwitcher period={period} startDay={state.startDay} onChange={(p) => setPeriodKey(p.key)} />
+      <div className="flex items-center gap-1">
+        <div className="min-w-0 flex-1">
+          <PeriodSwitcher period={period} startDay={state.startDay} onChange={(p) => setPeriodKey(p.key)} />
+        </div>
+        <SyncIcon />
+      </div>
       <section className="grid grid-cols-3 gap-2 text-center">
         {stat(t("home.income"), formatMoney(income), green)}
         {stat(t("home.spent"), formatMoney(spent), red)}

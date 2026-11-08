@@ -1,12 +1,13 @@
 "use client";
 
-// More tab: Wallets, Categories, the settings of spec §8 (language, digits, theme, month start day), install, quick-add link.
+// More tab: Account (sign-in, sync), Wallets, Categories, the settings of spec §8 (language, digits, theme, month start day), install, quick-add link.
 import { CalendarDays, ChevronRight, Hash, Languages, Shapes, SunMoon, Wallet } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { InstallRow } from "@/components/shell/InstallRow";
+import { AccountSection } from "@/components/sync/AccountSection";
 import { QuickAddHelp } from "@/components/shell/QuickAddHelp";
 import type { Theme } from "@/db/types";
 import { useEntries } from "@/features/entries/useEntries";
@@ -46,6 +47,7 @@ export default function MorePage() {
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-4 p-4">
       <h1 className="text-xl font-semibold">{t("nav.more")}</h1>
+      <AccountSection row={row} />
       <ul className="divide-y rounded-xl border">
         <li>
           <Link href="/wallets/" className={row}>

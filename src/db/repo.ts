@@ -10,6 +10,14 @@ type NewRow<T extends SyncFields> = Omit<T, keyof SyncFields>;
 
 export const nowIso = () => new Date().toISOString();
 
+const writeListeners = new Set<() => void>();
+/** Runs after every local change; the sync engine uses it to sync about 3 s later. Returns an unsubscribe. */
+export function onLocalWrite(fn: () => void): () => void {
+  writeListeners.add(fn);
+  return () => void writeListeners.delete(fn);
+}
+const changed = () => writeListeners.forEach((fn) => fn());
+
 /** UUID v4. randomUUID only exists on HTTPS/localhost, so phones on http://192.168.x.x need the fallback. */
 export function newId(): string {
   if (typeof crypto.randomUUID === "function") return crypto.randomUUID();
@@ -32,6 +40,7 @@ export async function insertRow<T extends SyncFields>(table: SyncedTable, data: 
     _dirty: 1,
   } as T;
   await db.table(table).add(row);
+  changed();
   return row;
 }
 
@@ -41,12 +50,15 @@ export async function updateRow<T extends SyncFields>(
   changes: Partial<NewRow<T>>,
 ): Promise<void> {
   await db.table(table).update(id, { ...changes, updated_at: nowIso(), _dirty: 1 });
+  changed();
 }
 
 /** Soft delete. Returns a function that undoes it (for the 5-second Undo bar). */
 export async function softDelete(table: SyncedTable, id: string): Promise<() => Promise<void>> {
   await db.table(table).update(id, { deleted_at: nowIso(), updated_at: nowIso(), _dirty: 1 });
+  changed();
   return async () => {
     await db.table(table).update(id, { deleted_at: null, updated_at: nowIso(), _dirty: 1 });
+    changed();
   };
 }

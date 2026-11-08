@@ -14,7 +14,7 @@ Roadmap from `docs/mvp-plan.md`. Tick a step only when `npm run check` passes an
 - [x] 5b. Settings screen: digits, theme (spec §8); language and month start day are on the More tab already
 - [ ] 5c. CSV export (spec §8), postponed from step 5
 - [x] 6. PWA: install prompt, offline caching (own service worker, not Serwist), app icons (placeholder ৳)
-- [ ] 7. Supabase: run the migrations, Google login, push/pull sync: spec §1, §10
+- [ ] 7. Supabase: run the migrations, Google login, push/pull sync: spec §1, §10 (built and unit-tested 2026-11-08; waiting for the live two-phone test)
 - [x] 8. Quick-add link (`/add?…`) and Android app shortcuts: spec §9
   - [ ] 8b. iOS Shortcut (ready-made Shortcut + steps on the More tab), postponed
 - [ ] 9. Beta test with 10–20 people on Android and iPhone
