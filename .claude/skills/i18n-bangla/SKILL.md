@@ -47,4 +47,4 @@ description: Rules for every piece of visible text, number, amount and date in t
 - Hard-code visible text in a component (including `aria-label`, `placeholder` and `title`)
 - Join translated pieces to build a sentence
 - Assume English text length: Bangla is often longer, so let layouts wrap
-- Use a font other than Hind Siliguri (already loaded in `layout.tsx`)
+- Use a font other than Hind Siliguri (already loaded in `layout.tsx`). The one exception: Bangla digits ০–৯ come from Noto Sans Bengali through the `Bangla Digits` @font-face in `globals.css` (Hind Siliguri's ১ looks like ৬)

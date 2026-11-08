@@ -13,6 +13,15 @@ import { emitMerged, getStatus, setStatus } from "./status";
 export const RETRY_MS = [5_000, 30_000, 120_000];
 export const DEBOUNCE_MS = 3_000;
 
+/** Supabase errors are plain objects with `message` (and often `code`), not Error instances. */
+export function errorText(err: unknown): string {
+  if (err && typeof err === "object" && "message" in err) {
+    const { message, code } = err as { message: unknown; code?: unknown };
+    return code ? `${String(message)} (${String(code)})` : String(message);
+  }
+  return String(err);
+}
+
 export function createRunner(remote: Remote) {
   let current: Promise<void> | null = null;
   let queued: Promise<void> | null = null;
@@ -43,12 +52,13 @@ export function createRunner(remote: Remote) {
       fails = 0;
       if (!res.signedIn) setStatus({ state: "signed_out", email: null });
       else {
-        setStatus({ state: "up_to_date", email: res.email, lastSyncedAt: new Date().toISOString() });
+        setStatus({ state: "up_to_date", email: res.email, lastSyncedAt: new Date().toISOString(), lastError: null });
         if (res.merged) emitMerged(res.merged);
       }
-    } catch {
+    } catch (err) {
       fails += 1;
-      setStatus({ state: fails >= RETRY_MS.length ? "error" : "up_to_date" });
+      // Keep spinning while retrying: never show "Synced" for a sync that failed (it hid a failing first sync).
+      setStatus({ state: fails >= RETRY_MS.length ? "error" : "syncing", lastError: errorText(err) });
       if (fails <= RETRY_MS.length) retryTimer = setTimeout(() => void run(), RETRY_MS[fails - 1]);
     }
     await settle();

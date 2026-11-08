@@ -49,8 +49,6 @@
     "amount": "Amount",
     "fee": "Fee (optional)",
     "category": "Category",
-    "more": "More",
-    "less": "Less",
     "wallet": "Wallet",
     "from": "From",
     "to": "To",
@@ -79,7 +77,13 @@
     "colorN": "Colour {n}",
     "iconN": "Icon {n}",
     "moveUp": "Move up",
-    "moveDown": "Move down"
+    "moveDown": "Move down",
+    "dragHandle": "Drag to reorder",
+    "dragInstructions": "To pick up a category, press Space. Use the arrow keys to move it, Space to drop it, Escape to cancel.",
+    "dragPicked": "Picked up {name}",
+    "dragMoved": "{name} moved",
+    "dragDropped": "{name} dropped",
+    "dragCancelled": "Moving {name} cancelled"
   },
   "wallets": {
     "title": "Wallets",
@@ -234,5 +238,14 @@
     "signOutAnyway": "Sign out anyway",
     "checking": "Checking…",
     "signOutError": "Couldn't sign out. Please try again."
+  },
+  "demo": {
+    "title": "Developer",
+    "add": "Add demo data",
+    "remove": "Remove demo data",
+    "added": "Added {count} demo rows",
+    "removed": "Demo data removed",
+    "signOutFirst": "Sign out first: demo data would upload to your account.",
+    "error": "Couldn't change demo data"
   }
 }

@@ -7,7 +7,7 @@ import { getStatus, setStatus } from "./status";
 beforeEach(async () => {
   await db.delete();
   await db.open();
-  setStatus({ state: "signed_out", known: false, email: null, pending: 0, lastSyncedAt: null });
+  setStatus({ state: "signed_out", known: false, email: null, pending: 0, lastSyncedAt: null, lastError: null });
 });
 afterEach(() => vi.useRealTimers());
 
@@ -25,7 +25,7 @@ describe("sync runner", () => {
     await r.run();
     await flush();
     expect(pull).toHaveBeenCalledTimes(1);
-    expect(getStatus().state).not.toBe("error");
+    expect(getStatus()).toMatchObject({ state: "syncing", lastError: "down" }); // never a false "Synced"
 
     await vi.advanceTimersByTimeAsync(RETRY_MS[0]);
     await flush();
@@ -40,7 +40,7 @@ describe("sync runner", () => {
     pull.mockRestore(); // the server is back
     await vi.advanceTimersByTimeAsync(RETRY_MS[2]);
     await flush();
-    expect(getStatus()).toMatchObject({ state: "up_to_date", email: "a@example.com" });
+    expect(getStatus()).toMatchObject({ state: "up_to_date", email: "a@example.com", lastError: null });
   });
 
   it("runs one sync at a time and queues a single follow-up", async () => {

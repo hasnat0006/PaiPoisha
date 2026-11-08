@@ -53,8 +53,9 @@ function EntryForm({ data, editing, prefill, close }: Pick<Props, "data" | "edit
   const form = useEntryForm(data, editing, prefill);
   const budgetLine = useBudgetLine();
   const { draft, set, setType, padField, setPadField, errors } = form;
-  // The pad steps aside once an amount is typed and the user moves on, so the fields below fit on small phones.
-  const [padOpen, setPadOpen] = useState(true);
+  // The pad opens only when the user taps the amount (or fee) (user, 2026-11-08), and steps aside again
+  // when they move on, so the fields below fit on small phones.
+  const [padOpen, setPadOpen] = useState(false);
   const showPad = padOpen || errors.includes("amount") || errors.includes("fee");
   const openPad = (field: "amount" | "fee") => {
     setPadField(field);
@@ -75,7 +76,6 @@ function EntryForm({ data, editing, prefill, close }: Pick<Props, "data" | "edit
       return void toast.error(t("saveError")); // keep the sheet open so nothing typed is lost
     }
     if (!row) return;
-    if (again) setPadOpen(true);
     const alert = budgetAlert(data, row, editing?.id);
     toast.success(t("saved"), { duration: alert ? 4000 : 1500, description: alert ? budgetLine(alert) : undefined });
     if (!again) close();

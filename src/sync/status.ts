@@ -14,6 +14,8 @@ export interface SyncStatus {
   email: string | null;
   pending: number; // local rows waiting to upload
   lastSyncedAt: string | null;
+  /** The last failure's message (shown under "Couldn't sync"); null after a good sync. */
+  lastError: string | null;
 }
 
 /** What the first sync of an account on this phone did (spec §1 merge). */
@@ -26,7 +28,7 @@ export interface MergeResult {
 /** Login and sync need both public env vars; without them the app runs local-only. */
 export const syncConfigured = () => !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
-const INITIAL: SyncStatus = { state: "signed_out", known: false, email: null, pending: 0, lastSyncedAt: null };
+const INITIAL: SyncStatus = { state: "signed_out", known: false, email: null, pending: 0, lastSyncedAt: null, lastError: null };
 let status = INITIAL;
 const listeners = new Set<() => void>();
 const mergeListeners = new Set<(r: MergeResult) => void>();

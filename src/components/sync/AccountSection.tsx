@@ -12,7 +12,7 @@ const syncNow = () => void import("@/sync/runner").then((m) => m.syncNow());
 
 export function AccountSection({ row }: { row: string }) {
   const t = useTranslations("account");
-  const { state, email } = useSyncStatus();
+  const { state, email, lastError } = useSyncStatus();
   const line = useSyncLine();
   if (!syncConfigured()) return null; // a build without Supabase keys runs local-only
 
@@ -33,10 +33,11 @@ export function AccountSection({ row }: { row: string }) {
               <span className={`text-sm ${state === "error" ? "text-destructive" : "text-muted-foreground"}`} role="status">
                 {line}
               </span>
+              {state === "error" && lastError && <span className="break-words text-xs text-muted-foreground">{lastError}</span>}
             </span>
           </li>
           <li>
-            <button type="button" className={row} onClick={syncNow} disabled={state === "syncing"}>
+            <button type="button" className={row} onClick={syncNow}>
               <RefreshCw className={`size-5 ${state === "syncing" ? "animate-spin" : ""}`} aria-hidden />
               <span className="flex-1">{t("syncNow")}</span>
             </button>

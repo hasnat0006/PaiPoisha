@@ -1,4 +1,4 @@
-// Bottom tab bar: Home · Transactions · Budgets · More.
+// Bottom tab bar: Home · Transactions · Budgets · More, as a floating glass pill above the screen edge (user, 2026-11-08).
 "use client";
 
 import { House, List, Menu, PiggyBank, type LucideIcon } from "lucide-react";
@@ -17,8 +17,8 @@ export function TabBar() {
   const t = useTranslations("nav");
   const path = (usePathname() ?? "/").replace(/\/$/, "") || "/";
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 glass border-t pb-[env(safe-area-inset-bottom)]">
-      <ul className="mx-auto flex max-w-md">
+    <nav className="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-30 px-4">
+      <ul className="mx-auto flex max-w-sm rounded-full border p-1 shadow-lg glass">
         {TABS.map(({ href, key, icon: Icon, match }) => {
           const active = match.some((m) => (m === "/" ? path === "/" : path.startsWith(m)));
           return (
@@ -26,7 +26,7 @@ export function TabBar() {
               <Link
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className={`flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs ${active ? "font-semibold text-primary" : "text-muted-foreground"}`}
+                className={`flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-full text-xs ${active ? "bg-primary/10 font-semibold text-primary" : "text-muted-foreground"}`}
               >
                 <Icon className="size-5" aria-hidden />
                 {t(key)}

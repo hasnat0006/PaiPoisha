@@ -1,28 +1,26 @@
 "use client";
 
-// Categories screen (spec §4): separate expense and income lists; add, edit, reorder, hide.
-import { EyeOff } from "lucide-react";
+// Categories screen (spec §4): separate expense and income lists; add, edit, drag to rank, hide.
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { MoveButtons } from "@/components/common/MoveButtons";
+import { toast } from "sonner";
+import { SortableCategoryList } from "@/components/categories/SortableCategoryList";
 import { PageHeader } from "@/components/common/PageHeader";
 import { LoadError, LoadingRows } from "@/components/common/ScreenState";
-import { CategoryIcon } from "@/components/entries/CategoryIcon";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Category, CategoryType } from "@/db/types";
-import { listFor, moveCategory } from "@/features/categories/categoryActions";
+import { listFor, saveCategoryOrder } from "@/features/categories/categoryActions";
 import { useEntries } from "@/features/entries/useEntries";
 import { useLocale } from "@/i18n/provider";
-import { categoryName } from "@/lib/entries";
 
 // The sheet brings the drawer library; load it only when first opened.
 const CategorySheet = dynamic(() => import("@/components/categories/CategorySheet").then((m) => m.CategorySheet), { ssr: false });
 
 export default function CategoriesPage() {
   const t = useTranslations();
-  const { ready, locale } = useLocale();
+  const { ready } = useLocale();
   const state = useEntries(ready ? t("entries.cashWallet") : null);
   const [type, setType] = useState<CategoryType>("expense");
   const [open, setOpen] = useState(false);
@@ -48,23 +46,12 @@ export default function CategoriesPage() {
       {state.status === "error" && <LoadError onRetry={state.retry} />}
       {state.status === "ready" && (
         <>
-          <ul className="divide-y rounded-xl border">
-            {listFor(type, state).map((c, i, list) => (
-              <li key={c.id} className={`flex items-center gap-1 pl-3 ${c.hidden ? "opacity-60" : ""}`}>
-                <button type="button" onClick={() => edit(c)} className="flex min-h-14 min-w-0 flex-1 items-center gap-3 py-2 text-left">
-                  <CategoryIcon name={c.icon} color={c.color} />
-                  <span className="min-w-0 flex-1 truncate text-base">{categoryName(c, locale)}</span>
-                  {c.hidden && (
-                    <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <EyeOff className="size-4" aria-hidden />
-                      {t("categories.hidden")}
-                    </span>
-                  )}
-                </button>
-                <MoveButtons index={i} count={list.length} onMove={(dir) => moveCategory(list, i, dir)} />
-              </li>
-            ))}
-          </ul>
+          <SortableCategoryList
+            key={type} // a fresh list per tab
+            list={listFor(type, state)}
+            onEdit={edit}
+            onReorder={(list) => saveCategoryOrder(list).catch(() => toast.error(t("wallets.saveError")))}
+          />
           <Button className="min-h-11 text-base" onClick={() => edit(null)}>
             {t("categories.add")}
           </Button>

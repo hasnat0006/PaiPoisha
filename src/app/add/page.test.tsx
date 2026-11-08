@@ -20,7 +20,7 @@ describe("/add quick-add link", () => {
 
     const amount = await screen.findByRole("button", { name: "Amount" });
     expect(amount.textContent).toBe("৳150");
-    expect(screen.getByRole("button", { name: "Transport" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("combobox", { name: "Category" }).textContent).toContain("Transport");
     expect((screen.getByLabelText("Note (optional)") as HTMLInputElement).value).toBe("rickshaw");
     expect(await db.transactions.count()).toBe(0); // nothing saved yet
 

@@ -5,7 +5,7 @@
 import { db } from "@/db/db";
 import { insertRow, softDelete, updateRow } from "@/db/repo";
 import type { Category, CategoryType } from "@/db/types";
-import { move, sortOrderChanges } from "@/lib/order";
+import { sortOrderChanges } from "@/lib/order";
 import type { EntriesData } from "../entries/useEntries";
 
 export const CATEGORY_NAME_MAX = 30;
@@ -41,8 +41,9 @@ export async function deleteCategory(c: Category, data: EntriesData): Promise<vo
   await softDelete("categories", c.id);
 }
 
-export async function moveCategory(list: Category[], index: number, dir: -1 | 1): Promise<void> {
-  const changes = sortOrderChanges(move(list, index, dir));
+/** Save a list's new order (after a drag); only rows whose position changed are written. */
+export async function saveCategoryOrder(list: Category[]): Promise<void> {
+  const changes = sortOrderChanges(list);
   await db.transaction("rw", db.categories, () =>
     Promise.all(changes.map((c) => updateRow<Category>("categories", c.id, { sort_order: c.sort_order }))),
   );

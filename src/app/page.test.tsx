@@ -17,8 +17,14 @@ const renderPage = () =>
     </I18nProvider>,
   );
 
+/** Tap the amount (the pad opens only then), then the keys. The sheet loads lazily. */
 const pad = async (keys: string) => {
-  for (const k of keys) fireEvent.click(await screen.findByRole("button", { name: k })); // the sheet loads lazily
+  fireEvent.click(await screen.findByRole("button", { name: "Amount" }));
+  for (const k of keys) fireEvent.click(await screen.findByRole("button", { name: k }));
+};
+const pickCategory = async (name: string) => {
+  fireEvent.click(await screen.findByRole("combobox", { name: "Category" })); // also the tap that makes the pad step aside
+  fireEvent.click(await screen.findByRole("option", { name }));
 };
 
 beforeEach(async () => {
@@ -33,9 +39,10 @@ describe("adding and listing entries", () => {
     renderPage();
     fireEvent.click(await screen.findByRole("button", { name: "Add your first expense" }));
 
+    expect(screen.queryByRole("button", { name: "7" })).toBeNull(); // the pad opens only when the amount is tapped
     // amount → category → Save (wallet and date are pre-filled)
     await pad("150");
-    fireEvent.click(await screen.findByRole("button", { name: "Groceries" }));
+    await pickCategory("Groceries");
     expect(screen.queryByRole("button", { name: "7" })).toBeNull(); // the pad steps aside so wallet/date/note fit
     fireEvent.click(screen.getByRole("button", { name: "Amount" }));
     expect(screen.getByRole("button", { name: "7" })).toBeTruthy(); // tapping the amount brings it back

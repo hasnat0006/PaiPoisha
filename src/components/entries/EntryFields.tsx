@@ -1,4 +1,4 @@
-// The middle of the add sheet: category grid (or From/To for transfers), wallet chips, date and note.
+// The middle of the add sheet: category dropdown (or From/To for transfers), wallet chips, date and note.
 "use client";
 
 import { useTranslations } from "next-intl";
@@ -7,7 +7,7 @@ import type { EntriesData } from "@/features/entries/useEntries";
 import type { useEntryForm } from "@/features/entries/useEntryForm";
 import { useLocale } from "@/i18n/provider";
 import { addDays, dhakaDay, NOTE_MAX } from "@/lib/entries";
-import { CategoryGrid } from "./CategoryGrid";
+import { CategorySelect } from "./CategorySelect";
 import { ChipGroup } from "./ChipGroup";
 
 interface Props {
@@ -27,7 +27,7 @@ export function EntryFields({ data, form, categories }: Props) {
   return (
     <div className="flex flex-col gap-3">
       {!isTransfer && (
-        <CategoryGrid
+        <CategorySelect
           categories={categories}
           value={draft.categoryId}
           onChange={(categoryId) => set({ categoryId })}

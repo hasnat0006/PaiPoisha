@@ -94,7 +94,8 @@ describe("categories screen", () => {
 
     renderIn(<HomePage />);
     await click("Add your first expense");
-    await screen.findByRole("button", { name: "Groceries" });
-    expect(screen.queryByRole("button", { name: "Transport" })).toBeNull();
+    fireEvent.click(await screen.findByRole("combobox", { name: "Category" }));
+    await screen.findByRole("option", { name: "Groceries" });
+    expect(screen.queryByRole("option", { name: "Transport" })).toBeNull();
   });
 });

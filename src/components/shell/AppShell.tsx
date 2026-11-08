@@ -129,10 +129,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <Ctx.Provider value={openEntry}>
-      <div className="flex flex-1 flex-col pb-[calc(5rem+env(safe-area-inset-bottom))]">{children}</div>
+      <div className="flex flex-1 flex-col pb-[calc(max(0.75rem,env(safe-area-inset-bottom))+5rem)]">{children}</div>
       {state.status === "ready" && (
         <Button
-          className="fixed right-[max(1rem,calc(50%-14rem+1rem))] bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-40 size-14 rounded-full shadow-lg glass! [--glass-tint:var(--primary)]"
+          className="fixed right-[max(1rem,calc(50%-14rem+1rem))] bottom-[calc(max(0.75rem,env(safe-area-inset-bottom))+4.25rem)] z-40 size-14 rounded-full shadow-lg glass! [--glass-tint:var(--primary)]"
           onClick={() => openEntry(null)}
           aria-label={t("entries.add")}
         >

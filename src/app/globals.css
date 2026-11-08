@@ -4,11 +4,21 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Bangla digits ০–৯ only, from Noto Sans Bengali: Hind Siliguri's ১ reads poorly (user, 2026-11-08).
+   unicode-range keeps every other character in Hind Siliguri; one variable file covers all weights. */
+@font-face {
+  font-family: "Bangla Digits";
+  src: url("../../node_modules/@fontsource-variable/noto-sans-bengali/files/noto-sans-bengali-bengali-wght-normal.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+09E6-09EF;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Hind Siliguri", system-ui, sans-serif;
-  --font-heading: "Hind Siliguri", system-ui, sans-serif;
+  --font-sans: "Bangla Digits", "Hind Siliguri", system-ui, sans-serif;
+  --font-heading: "Bangla Digits", "Hind Siliguri", system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);

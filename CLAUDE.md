@@ -21,7 +21,7 @@ A free, bilingual (বাংলা / English) personal money tracker for Banglad
 
 ## Stack
 
-Next.js 16 (App Router, `output: "export"`) · TypeScript strict · Tailwind CSS v4 · shadcn/ui · next-intl (client-side only) · Dexie (IndexedDB) · Supabase (Google login + Postgres + RLS) · Recharts · Vitest · Hind Siliguri font via @fontsource.
+Next.js 16 (App Router, `output: "export"`) · TypeScript strict · Tailwind CSS v4 · shadcn/ui · next-intl (client-side only) · Dexie (IndexedDB) · Supabase (Google login + Postgres + RLS) · Recharts · Vitest · @dnd-kit (drag to rank categories) · Hind Siliguri font via @fontsource (Bangla digits ০–৯ from Noto Sans Bengali, see `globals.css`).
 
 ## Folder structure
 

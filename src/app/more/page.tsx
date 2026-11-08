@@ -2,6 +2,7 @@
 
 // More tab: Account (sign-in, sync), Wallets, Categories, the settings of spec §8 (language, digits, theme, month start day), install, quick-add link.
 import { CalendarDays, ChevronRight, Hash, Languages, Shapes, SunMoon, Wallet } from "lucide-react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
@@ -14,6 +15,10 @@ import { useEntries } from "@/features/entries/useEntries";
 import { saveSettings, setMonthStartDay } from "@/features/settings/settingsActions";
 import { useLocale } from "@/i18n/provider";
 import { toBanglaDigits } from "@/lib/money";
+
+// Development builds only: the production build drops this branch, so the demo code is never shipped.
+const DemoDataSection =
+  process.env.NODE_ENV === "development" ? dynamic(() => import("@/components/dev/DemoDataSection").then((m) => m.DemoDataSection), { ssr: false }) : null;
 
 const DAYS = Array.from({ length: 28 }, (_, i) => i + 1);
 const THEMES = [
@@ -115,6 +120,7 @@ export default function MorePage() {
         <InstallRow className={row} />
       </ul>
       <QuickAddHelp />
+      {DemoDataSection && <DemoDataSection row={row} />}
     </main>
   );
 }

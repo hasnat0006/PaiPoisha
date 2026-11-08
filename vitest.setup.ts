@@ -13,6 +13,6 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(window.location.search),
 }));
 
-// findBy*/waitFor: allow time for lazy chunks (the add sheet) when all test files run in parallel.
+// findBy*/waitFor: allow time for lazy chunks (the add sheet) when all test files run in parallel on a cold cache.
 import { configure } from "@testing-library/react";
-configure({ asyncUtilTimeout: 5000 });
+configure({ asyncUtilTimeout: 10_000 });
