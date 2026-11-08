@@ -19,6 +19,7 @@ import { useServiceWorker } from "@/features/pwa/usePwa";
 import { useLocale } from "@/i18n/provider";
 import { onMerged, setStatus, syncConfigured, useSyncStatus } from "@/sync/status";
 import { TabBar } from "./TabBar";
+import { useSwipeTabs } from "./useSwipeTabs";
 import { Welcome } from "./Welcome";
 
 // The sheet (and its drawer library) is the biggest piece of JS; load it after first paint.
@@ -60,6 +61,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [prefill, setPrefill] = useState<Partial<EntryDraft>>();
   useServiceWorker();
+  const swipe = useSwipeTabs();
   useSyncToasts();
   const { resolvedTheme, setTheme } = useTheme();
 
@@ -129,7 +131,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <Ctx.Provider value={openEntry}>
-      <div className="flex flex-1 flex-col pb-[calc(max(0.75rem,env(safe-area-inset-bottom))+5rem)]">{children}</div>
+      <div className="flex flex-1 flex-col pb-[calc(max(0.75rem,env(safe-area-inset-bottom))+5rem)] [touch-action:pan-y_pinch-zoom]" {...swipe}>
+        {children}
+      </div>
       <TabBar onAdd={state.status === "ready" ? () => openEntry(null) : undefined} />
       {used && state.status === "ready" && <EntrySheet open={open} onOpenChange={setOpen} editing={editing} data={state} prefill={prefill} />}
     </Ctx.Provider>

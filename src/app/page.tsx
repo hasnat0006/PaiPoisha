@@ -26,7 +26,7 @@ const green = "text-green-600 dark:text-green-400";
 
 export default function HomePage() {
   const t = useTranslations();
-  const { ready } = useLocale();
+  const { ready, banglaDigits } = useLocale();
   const { formatMoney } = useMoney();
   const openEntry = useOpenEntry();
   const state = useEntries(ready ? t("entries.cashWallet") : null);
@@ -60,10 +60,18 @@ export default function HomePage() {
   const balances = walletBalances(state.wallets, state.entries);
   const total = totalBalance(state.activeWallets, balances);
   const alerts = budgetRows(state, period).filter((r) => r.progress.status !== "ok");
+  const values = [formatMoney(income), formatMoney(spent), formatMoney(net, { signed: true })];
+  // Bigger numbers (user, 2026-11-09): as large as the narrowest card allows, up to 20 px, one size for all three so
+  // they match. Sized from the longest value, so "+৳1,23,456" shrinks instead of overflowing. Measured width per
+  // character, with a little spare: English digits 0.46 em, Bangla 0.56 em.
+  const emPerChar = banglaDigits ? 0.6 : 0.5;
+  const fontSize = `min(1.25rem, ${(100 / (Math.max(...values.map((v) => v.length)) * emPerChar)).toFixed(1)}cqw)`;
   const stat = (label: string, value: string, cls = "") => (
-    <div className="rounded-xl border p-3">
+    <div className="@container rounded-xl border p-3">
       <div className="text-xs text-muted-foreground">{label}</div>
-      <div className={`mt-1 whitespace-nowrap text-sm font-semibold tabular-nums ${cls}`}>{value}</div>
+      <div className={`mt-1 whitespace-nowrap font-semibold tabular-nums ${cls}`} style={{ fontSize }}>
+        {value}
+      </div>
     </div>
   );
 
@@ -76,9 +84,9 @@ export default function HomePage() {
         <SyncIcon />
       </div>
       <section className="grid grid-cols-3 gap-2 text-center">
-        {stat(t("home.income"), formatMoney(income), green)}
-        {stat(t("home.spent"), formatMoney(spent), red)}
-        {stat(t("home.net"), formatMoney(net, { signed: true }), net < 0 ? red : green)}
+        {stat(t("home.income"), values[0], green)}
+        {stat(t("home.spent"), values[1], red)}
+        {stat(t("home.net"), values[2], net < 0 ? red : green)}
       </section>
 
       <section>

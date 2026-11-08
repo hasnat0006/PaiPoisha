@@ -22,7 +22,7 @@ The target is a **360 px-wide, ~3 GB RAM Android phone, often on a slow connecti
 - Tap targets of at least 44 × 44 px (`min-h-11 min-w-11`).
 - Text: body `text-base`, labels `text-sm`, totals `text-2xl font-semibold tabular-nums`. Never smaller than `text-xs`.
 - Amounts always get `whitespace-nowrap tabular-nums`, so "+৳1,23,456" never breaks across lines; shrink the text size instead.
-- Corners: **only `rounded-md`** (user, 2026-11-08). No pills or circles (`rounded-full`); every radius token maps to md in `globals.css`. **Exception: the tab bar** (user, 2026-11-09) may use any rounding: it is a pill with a round +. The selected tab is brand green (`text-brand`) with a small dot under it, never a background.
+- Corners: **only `rounded-md`** (user, 2026-11-08). No pills or circles (`rounded-full`); every radius token maps to md in `globals.css`. **Exception: the tab bar** (user, 2026-11-09) may use any rounding: it is a pill with a round +. The selected tab is brand green (`text-brand`) with a small dot under it, never a background. Swiping left/right on a tab's page moves between tabs (`useSwipeTabs`); mark anything with its own horizontal drag `data-no-swipe`.
 
 ## The add-entry sheet (the most important screen)
 

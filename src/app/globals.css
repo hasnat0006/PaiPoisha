@@ -63,6 +63,14 @@ body {
   font-family: var(--font-sans);
 }
 
+/* A tab swipe slides the page sideways; without this, mobile browsers widen the layout to fit it and the fixed tab bar
+   drops off screen. On both: body's own overflow is otherwise handed to the window and clips nothing. `clip`, not
+   `hidden`, so sticky headers and footers still work. */
+html,
+body {
+  overflow-x: clip;
+}
+
 /* Frosted "Liquid Glass" surface for floating bars and sheets, not cards or lists. Solid fallback first.
    Tint with [--glass-tint:var(--popover)] when it must stand out from the page (dark mode). */
 @utility glass {

@@ -89,6 +89,21 @@ describe("adding and listing entries", () => {
     expect((await screen.findByRole("button", { name: "Amount" })).textContent).toBe("৳0"); // saved: nothing kept
   });
 
+  it("a left swipe on the page opens the next tab; a vertical one doesn't", async () => {
+    window.history.pushState({}, "", "/");
+    renderPage();
+    const page = await screen.findByRole("button", { name: "Add your first expense" });
+    const swipe = (x0: number, x1: number, y1 = 300) => {
+      fireEvent.touchStart(page, { touches: [{ clientX: x0, clientY: 300 }] });
+      fireEvent.touchEnd(page, { changedTouches: [{ clientX: x1, clientY: y1 }] });
+    };
+    swipe(300, 290, 600); // mostly down: a scroll
+    expect(window.location.pathname).toBe("/");
+    swipe(300, 150);
+    await waitFor(() => expect(window.location.pathname).toBe("/transactions/")); // after the slide-out
+    window.history.pushState({}, "", "/");
+  });
+
   it("asks for an amount and a category before saving", async () => {
     renderPage();
     fireEvent.click(await screen.findByRole("button", { name: "Add your first expense" }));
