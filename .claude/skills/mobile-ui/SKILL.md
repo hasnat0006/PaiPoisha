@@ -17,12 +17,12 @@ The target is a **360 px-wide, ~3 GB RAM Android phone, often on a slow connecti
 ## Layout
 
 - Single column, `max-w-md mx-auto`, padding `p-4`. No desktop-only layouts in the MVP.
-- Bottom tab bar: Home · Transactions · Budgets · More, plus a floating **+** button above it, always reachable with a thumb.
+- Bottom tab bar: a floating glass pill, Home · Transactions · **+** · Budgets · More. The + in the middle is a larger solid primary circle inside the bar (user, 2026-11-09), so it stands apart from the tabs.
 - Respect iPhone safe areas: `pb-[env(safe-area-inset-bottom)]` on bottom bars.
 - Tap targets of at least 44 × 44 px (`min-h-11 min-w-11`).
 - Text: body `text-base`, labels `text-sm`, totals `text-2xl font-semibold tabular-nums`. Never smaller than `text-xs`.
 - Amounts always get `whitespace-nowrap tabular-nums`, so "+৳1,23,456" never breaks across lines; shrink the text size instead.
-- Corners: **only `rounded-md`** (user, 2026-11-08). No pills or circles (`rounded-full`); every radius token maps to md in `globals.css`.
+- Corners: **only `rounded-md`** (user, 2026-11-08). No pills or circles (`rounded-full`); every radius token maps to md in `globals.css`. **Exception: the tab bar** (user, 2026-11-09) may use any rounding: it is a pill with a round +. The selected tab is brand green (`text-brand`) with a small dot under it, never a background.
 
 ## The add-entry sheet (the most important screen)
 

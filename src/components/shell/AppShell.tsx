@@ -1,9 +1,8 @@
-// App frame: bottom tab bar, the always-visible + button, and the one add/edit sheet every screen opens.
+// App frame: bottom tab bar (with the + in its middle), and the one add/edit sheet every screen opens.
 // Also starts background sync and shows the welcome page on a brand-new phone.
 "use client";
 
 import { useLiveQuery } from "dexie-react-hooks";
-import { Plus } from "lucide-react";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -11,7 +10,6 @@ import { useTheme } from "next-themes";
 import { createContext, useContext, useEffect, useState } from "react";
 import { notify } from "@/components/common/notify";
 import { useSyncToasts } from "@/components/sync/useSyncToasts";
-import { Button } from "@/components/ui/button";
 import { db } from "@/db/db";
 import type { Transaction } from "@/db/types";
 import { useEntries } from "@/features/entries/useEntries";
@@ -132,16 +130,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <Ctx.Provider value={openEntry}>
       <div className="flex flex-1 flex-col pb-[calc(max(0.75rem,env(safe-area-inset-bottom))+5rem)]">{children}</div>
-      {state.status === "ready" && (
-        <Button
-          className="fixed right-[max(1rem,calc(50%-14rem+1rem))] bottom-[calc(max(0.75rem,env(safe-area-inset-bottom))+4.25rem)] z-40 size-14 rounded-md shadow-lg glass! [--glass-tint:var(--primary)]"
-          onClick={() => openEntry(null)}
-          aria-label={t("entries.add")}
-        >
-          <Plus className="size-7" />
-        </Button>
-      )}
-      <TabBar />
+      <TabBar onAdd={state.status === "ready" ? () => openEntry(null) : undefined} />
       {used && state.status === "ready" && <EntrySheet open={open} onOpenChange={setOpen} editing={editing} data={state} prefill={prefill} />}
     </Ctx.Provider>
   );

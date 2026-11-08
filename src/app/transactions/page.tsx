@@ -82,7 +82,7 @@ function TransactionsScreen() {
               {t("transactions.loadMore")}
             </Button>
           )}
-          <footer className="sticky bottom-[calc(max(0.75rem,env(safe-area-inset-bottom))+4rem)] -mx-4 flex justify-between glass border-t px-4 py-2 pr-20 text-sm">
+          <footer className="sticky bottom-[calc(max(0.75rem,env(safe-area-inset-bottom))+4.5rem)] -mx-4 flex justify-between glass border-t px-4 py-2 text-sm">
             <span>{t("transactions.count", { count: rows.length })}</span>
             <span className="whitespace-nowrap font-semibold tabular-nums">
               {formatMoney(netOf(rows, totalsCtx(data.categories)), { signed: true })}

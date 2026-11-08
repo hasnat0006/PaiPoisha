@@ -393,7 +393,7 @@ Five tables, the same in Dexie and Supabase. Every table also has `id` (UUID), `
 
 ## Screens
 
-Seven screens, with a bottom tab bar (Home · Transactions · Budgets · More) and a big + button that is always visible.
+Seven screens, with a bottom tab bar (Home · Transactions · + · Budgets · More); the big + in its middle is always visible.
 
 | Screen | What's on it |
 | --- | --- |
