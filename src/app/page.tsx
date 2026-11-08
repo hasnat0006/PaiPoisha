@@ -95,7 +95,8 @@ export default function HomePage() {
           <span className={`block whitespace-nowrap text-2xl font-semibold tabular-nums ${total < 0 ? red : ""}`}>{formatMoney(total)}</span>
         </Link>
         <ul className="-mx-4 mt-2 flex gap-2 overflow-x-auto px-4 pb-1">
-          {state.activeWallets.map((w) => {
+          {/* Biggest balance first (user, 2026-11-09); sort is stable, so equal balances keep the user's order. */}
+          {[...state.activeWallets].sort((a, z) => (balances.get(z.id) ?? 0) - (balances.get(a.id) ?? 0)).map((w) => {
             const b = balances.get(w.id) ?? 0;
             return (
               <li key={w.id} className="flex min-w-36 shrink-0 items-center gap-2 rounded-xl border p-2">
