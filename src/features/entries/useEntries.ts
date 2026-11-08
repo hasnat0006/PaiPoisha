@@ -10,6 +10,7 @@ import { ensureSeeded } from "@/db/seed";
 import type { Budget, Category, Settings, Transaction, Wallet } from "@/db/types";
 import type { EntryFields } from "@/lib/entries";
 import { DEFAULT_START_DAY } from "@/lib/period";
+import { syncConfigured } from "@/sync/status";
 
 export interface EntriesData {
   entries: Transaction[];
@@ -31,7 +32,12 @@ export function useEntries(cashName: string | null): State & { retry: () => void
   useEffect(() => {
     if (cashName === null) return;
     ensureSeeded(cashName).then(
-      () => setSeedFailed(false),
+      () => {
+        setSeedFailed(false);
+        // Dev server only, and only without login (no keys): dummy data. A production build drops this code.
+        if (process.env.NODE_ENV === "development" && !syncConfigured())
+          void import("@/features/demo/demoData").then((m) => m.autoAddDemoData()).catch(() => {});
+      },
       () => setSeedFailed(true),
     );
   }, [cashName, attempt]);

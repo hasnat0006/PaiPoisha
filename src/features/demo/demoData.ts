@@ -1,7 +1,8 @@
 /**
  * Demo data for development only (user, 2026-11-08): three more wallets, about three months of entries,
  * cash-out transfers with fees, and this month's budgets, so every screen has something to show.
- * The More tab offers it only under `npm run dev` and only while signed out (it would upload otherwise).
+ * Under `npm run dev` (which has no Supabase keys) a fresh database gets it automatically; the More tab adds or
+ * removes it, only while signed out (it would upload otherwise). Production builds never include this file.
  * Rows are written through repo.ts like real ones; their ids are kept in meta so Remove deletes exactly them.
  */
 import { db } from "@/db/db";
@@ -11,6 +12,7 @@ import { PRESETS } from "@/features/wallets/presets";
 import { DEFAULT_START_DAY, getPeriod } from "@/lib/period";
 
 const META_KEY = "demo_rows";
+const AUTO_KEY = "demo_auto"; // set once the dev database has been offered the demo set
 const DAYS = 90;
 const tk = (taka: number) => Math.round(taka) * 100; // whole taka → paisa
 
@@ -24,6 +26,19 @@ function random(seed: number) {
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
+}
+
+/**
+ * Fills a fresh dev database with the demo set, once (user, 2026-11-09: the dev server shows dummy data, production
+ * never does). Skipped if the database already has entries; once removed in More, it stays removed.
+ */
+export async function autoAddDemoData(now = new Date()): Promise<void> {
+  const first = await db.transaction("rw", db.meta, async () => {
+    if (await db.meta.get(AUTO_KEY)) return false; // two calls at once (React dev mode): only one goes on
+    await db.meta.put({ key: AUTO_KEY, value: now.toISOString() });
+    return true;
+  });
+  if (first && (await db.transactions.count()) === 0) await addDemoData(now);
 }
 
 export async function hasDemoData(): Promise<boolean> {

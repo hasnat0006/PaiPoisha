@@ -4,7 +4,7 @@ import { insertRow } from "@/db/repo";
 import { ensureSeeded } from "@/db/seed";
 import type { Transaction } from "@/db/types";
 import { walletBalances } from "@/lib/balances";
-import { addDemoData, hasDemoData, removeDemoData } from "./demoData";
+import { addDemoData, autoAddDemoData, hasDemoData, removeDemoData } from "./demoData";
 
 const NOW = new Date("2026-11-08T10:00:00+06:00");
 
@@ -43,5 +43,24 @@ describe("demo data (dev only)", () => {
     expect((await db.transactions.toArray()).map((t) => t.id)).toEqual([mine.id]);
     expect(await db.wallets.count()).toBe(1);
     expect(await db.budgets.count()).toBe(0);
+  });
+
+  it("fills a fresh dev database once; after Remove it stays removed", async () => {
+    await Promise.all([autoAddDemoData(NOW), autoAddDemoData(NOW)]); // React dev mode runs effects twice
+    expect(await hasDemoData()).toBe(true);
+    const count = await db.transactions.count();
+    await removeDemoData();
+    await autoAddDemoData(NOW); // next app start
+    expect(await hasDemoData()).toBe(false);
+    expect(count).toBeGreaterThan(100);
+  });
+
+  it("leaves a database that already has the user's entries alone", async () => {
+    const [cash] = await db.wallets.toArray();
+    await insertRow<Transaction>("transactions", {
+      type: "expense", amount_paisa: 15000, wallet_id: cash.id, to_wallet_id: null, category_id: null, fee_paisa: 0, note: "", occurred_at: NOW.toISOString(),
+    });
+    await autoAddDemoData(NOW);
+    expect(await hasDemoData()).toBe(false);
   });
 });

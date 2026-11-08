@@ -12,7 +12,7 @@ A free, bilingual (বাংলা / English) personal money tracker for Banglad
 
 | Command | What it does |
 | --- | --- |
-| `npm run dev` | Dev server at http://localhost:3000 |
+| `npm run dev` | Dev server at http://localhost:3000: offline, no login, fills itself with demo data. Supabase keys live in `.env.production.local`, which dev never loads; see `.env.example` |
 | `npm run check` | typecheck + lint + tests + static build. **Must pass before you say a task is done.** |
 | `npm test` | Vitest unit tests |
 | `npm run build` | Static export to `out/` |
@@ -47,8 +47,8 @@ docs/             plan, progress, decisions
 3. **UI reads and writes only Dexie.** Writes go through `src/db/repo.ts` (`insertRow`, `updateRow`, `softDelete`) so ids, timestamps and `_dirty` are always set. Never call Supabase from a component.
 4. **Never hard-delete synced rows.** Set `deleted_at`. Every query hides rows where `deleted_at` is set.
 5. **No hard-coded visible text.** Every string goes in both `src/messages/bn.json` and `en.json` under the same key.
-6. **Schema changes touch three places together:** `src/db/types.ts`, a new Dexie `version()` in `src/db/db.ts`, and a new `supabase/migrations/NNNN_*.sql` with RLS.
-7. **Secrets:** only `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` may appear in the app. Never the service_role key. Never commit `.env.local`.
+6. **Schema changes touch three places together:** `src/db/types.ts`, a new Dexie `version()` in `src/db/db.ts`, and a new `supabase/migrations/NNNN_*.sql` with RLS. Also add any new column to `COLUMNS` in `src/sync/engine.ts` (only listed columns are uploaded; a test checks the list against the types).
+7. **Secrets:** only `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` may appear in the app. Never the service_role key. Never commit `.env*.local` (the keys live in `.env.production.local`).
 8. **Mobile first:** design for a 360 px-wide budget Android phone; tap targets at least 44 px; it must work offline.
 9. **Stay in scope:** build what `docs/mvp-plan.md` says for the current roadmap step. If something is unclear or seems wrong, ask; don't invent features.
 10. **This Next.js version may differ from your training data:** check `node_modules/next/dist/docs/` before using an API you're not sure about.
