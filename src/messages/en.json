@@ -220,6 +220,22 @@
     "androidTitle": "Android: home-screen shortcut",
     "android": "After installing the app, press and hold its icon. Drag “Add expense” (or Add income / Transfer) onto the home screen. One tap then opens the add screen."
   },
+  "shortcut": {
+    "title": "iPhone: save from a Shortcut",
+    "intro": "Add an expense from the home screen without opening the app: title, amount, category, then Save. It uses your last-used wallet and needs internet. The entry shows up here after the next sync.",
+    "signIn": "Sign in with Google above to use the iPhone Shortcut.",
+    "step1": "1. Make your key and copy it.",
+    "makeKey": "Make my key",
+    "keyLabel": "Shortcut key",
+    "keyNote": "The key is shown only once. Making a new key stops the old one.",
+    "copy": "Copy",
+    "copied": "Key copied",
+    "copyManually": "Press and hold the key to copy it",
+    "keyError": "Couldn’t make a key. Check the internet and try again.",
+    "step2": "2. Tap Install Shortcut, then paste the key when the iPhone asks for it.",
+    "install": "Install Shortcut",
+    "step3": "3. Add the Shortcut to the home screen, the Action Button or Back Tap."
+  },
   "welcome": {
     "point1": "Cash, bKash, Nagad, Rocket and bank in one place",
     "point2": "Works without internet",

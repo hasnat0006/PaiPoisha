@@ -1,4 +1,4 @@
-// More tab: the quick-add link to copy, and how to put an Android home-screen shortcut on it (spec §9). iOS Shortcut: later.
+// More tab: the quick-add link to copy, how to put an Android home-screen shortcut on it (spec §9), and the iPhone Shortcut.
 "use client";
 
 import { Zap } from "lucide-react";
@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { notify } from "@/components/common/notify";
 import { Button } from "@/components/ui/button";
+import { IosShortcut } from "@/components/sync/IosShortcut";
 
 export function QuickAddHelp() {
   const t = useTranslations("quickAdd");
@@ -46,6 +47,7 @@ export function QuickAddHelp() {
         <summary className="flex min-h-11 cursor-pointer items-center font-medium">{t("androidTitle")}</summary>
         <p className="text-muted-foreground">{t("android")}</p>
       </details>
+      <IosShortcut />
     </section>
   );
 }
