@@ -19,6 +19,56 @@ export async function signInWithGoogle(): Promise<void> {
   if (error) throw error;
 }
 
+/** Public by design (it is in every Google page); unset → the redirect flow above is used. */
+export const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+type GisCredential = { credential: string };
+type Gis = {
+  initialize(o: { client_id: string; callback: (r: GisCredential) => void; nonce: string; use_fedcm_for_prompt?: boolean }): void;
+  renderButton(el: HTMLElement, o: Record<string, unknown>): void;
+};
+
+function loadGis(): Promise<Gis> {
+  const get = () => (window as unknown as { google?: { accounts: { id: Gis } } }).google?.accounts.id;
+  const ready = get();
+  if (ready) return Promise.resolve(ready);
+  return new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = "https://accounts.google.com/gsi/client";
+    s.async = true;
+    s.onload = () => (get() ? resolve(get()!) : reject(new Error("gis")));
+    s.onerror = () => reject(new Error("gis"));
+    document.head.appendChild(s);
+  });
+}
+
+/**
+ * Google's own button (Identity Services): the sign-in window says "PaiPoisha" instead of the Supabase address.
+ * `onDone(false)` = Supabase refused the token. Supabase wants the SHA-256 of our nonce in Google's token.
+ */
+export async function renderGoogleButton(el: HTMLElement, onDone: (ok: boolean) => void): Promise<void> {
+  if (!supabase || !GOOGLE_CLIENT_ID) return;
+  const raw = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(16))));
+  const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(raw));
+  const nonce = [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  const gis = await loadGis();
+  gis.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    nonce,
+    callback: async ({ credential }) => {
+      const { error } = await supabase!.auth.signInWithIdToken({ provider: "google", token: credential, nonce: raw });
+      onDone(!error);
+    },
+  });
+  gis.renderButton(el, {
+    type: "standard",
+    theme: document.documentElement.classList.contains("dark") ? "filled_black" : "outline",
+    size: "large",
+    text: "continue_with",
+    width: Math.min(400, Math.max(200, el.clientWidth)),
+  });
+}
+
 /** On /auth/callback/: waits until supabase-js has swapped Google's code for a session (none if the user backed out). */
 export async function finishSignIn(): Promise<boolean> {
   if (!supabase) return false;
