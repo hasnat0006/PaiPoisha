@@ -37,10 +37,7 @@
     "digits": "Digits",
     "digitsBangla": "Bangla (১২৩)",
     "digitsEnglish": "English (123)",
-    "theme": "Theme",
-    "themeLight": "Light",
-    "themeDark": "Dark",
-    "themeSystem": "Match phone"
+    "darkMode": "Dark mode"
   },
   "entries": {
     "title": "Entries",

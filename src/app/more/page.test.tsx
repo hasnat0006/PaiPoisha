@@ -32,7 +32,7 @@ describe("settings on the More tab", () => {
     renderMore();
     await waitFor(() => expect(firstDay()).toBe("1"));
 
-    fireEvent.click(screen.getByRole("button", { name: /Digits/ }));
+    fireEvent.click(screen.getByRole("switch", { name: /Digits/ }));
     await waitFor(() => expect(firstDay()).toBe("১"));
     expect(localStorage.getItem("mm.digits")).toBe("bn");
     await waitFor(async () => expect((await settingsRow())?.bangla_digits).toBe(true));
@@ -43,9 +43,9 @@ describe("settings on the More tab", () => {
     await waitFor(() => expect(firstDay()).toBe("১"));
 
     // language change → digits follow the new language's default; the manual choice is gone
-    fireEvent.click(screen.getByRole("button", { name: /Language/ }));
-    await screen.findByRole("button", { name: /ভাষা/ });
-    fireEvent.click(screen.getByRole("button", { name: /ভাষা/ }));
+    fireEvent.click(screen.getByRole("switch", { name: /Language/ }));
+    await screen.findByRole("switch", { name: /ভাষা/ });
+    fireEvent.click(screen.getByRole("switch", { name: /ভাষা/ }));
     await waitFor(() => expect(firstDay()).toBe("1"));
     expect(localStorage.getItem("mm.digits")).toBeNull();
     await waitFor(async () => expect(await settingsRow()).toMatchObject({ language: "en", bangla_digits: false }));
@@ -56,17 +56,17 @@ describe("settings on the More tab", () => {
     document.head.append(meta);
     renderMore();
 
-    const dark = await screen.findByRole("button", { name: "Dark" });
+    const dark = await screen.findByRole("switch", { name: /Dark mode/ });
     await act(async () => fireEvent.click(dark));
     await waitFor(() => expect(document.documentElement.classList.contains("dark")).toBe(true));
-    expect(dark.getAttribute("aria-pressed")).toBe("true");
+    expect(dark.getAttribute("aria-checked")).toBe("true");
     expect(localStorage.getItem("theme")).toBe("dark");
     await waitFor(() => expect(meta.content).toBe("#0a0a0a"));
     await waitFor(async () => expect((await settingsRow())?.theme).toBe("dark"));
 
-    fireEvent.click(screen.getByRole("button", { name: "Match phone" }));
-    await waitFor(() => expect(document.documentElement.classList.contains("dark")).toBe(false)); // test phone is light
-    await waitFor(async () => expect((await settingsRow())?.theme).toBe("system"));
+    fireEvent.click(dark);
+    await waitFor(() => expect(document.documentElement.classList.contains("dark")).toBe(false));
+    await waitFor(async () => expect((await settingsRow())?.theme).toBe("light"));
     meta.remove();
   });
 });

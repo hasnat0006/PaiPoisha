@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { notify } from "@/components/common/notify";
+import { SwitchKnob } from "@/components/common/SwitchKnob";
 import { InstallRow } from "@/components/shell/InstallRow";
 import { AccountSection } from "@/components/sync/AccountSection";
 import { QuickAddHelp } from "@/components/shell/QuickAddHelp";
@@ -21,18 +22,13 @@ const DemoDataSection =
   process.env.NODE_ENV === "development" ? dynamic(() => import("@/components/dev/DemoDataSection").then((m) => m.DemoDataSection), { ssr: false }) : null;
 
 const DAYS = Array.from({ length: 28 }, (_, i) => i + 1);
-const THEMES = [
-  { id: "light", key: "themeLight" },
-  { id: "dark", key: "themeDark" },
-  { id: "system", key: "themeSystem" },
-] as const satisfies { id: Theme; key: string }[];
 
 const row = "flex min-h-14 w-full items-center gap-3 px-4 text-left text-base";
 
 export default function MorePage() {
   const t = useTranslations();
   const { locale, setLocale, ready, banglaDigits, setBanglaDigits } = useLocale();
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const state = useEntries(ready ? t("entries.cashWallet") : null);
   const saveError = () => notify.error(t("common.saveError"));
   const changeStartDay = (day: number) => setMonthStartDay(day, locale).catch(saveError);
@@ -69,37 +65,28 @@ export default function MorePage() {
           </Link>
         </li>
         <li>
-          <button type="button" className={row} onClick={changeLanguage}>
+          <button type="button" role="switch" aria-checked={locale === "bn"} className={row} onClick={changeLanguage}>
             <Languages className="size-5" aria-hidden />
             <span className="flex-1">{t("settings.language")}</span>
             <span className="text-muted-foreground">{locale === "bn" ? t("settings.bangla") : t("settings.english")}</span>
+            <SwitchKnob on={locale === "bn"} />
           </button>
         </li>
         <li>
-          <button type="button" className={row} onClick={changeDigits}>
+          <button type="button" role="switch" aria-checked={banglaDigits} className={row} onClick={changeDigits}>
             <Hash className="size-5" aria-hidden />
             <span className="flex-1">{t("settings.digits")}</span>
             <span className="text-muted-foreground">{banglaDigits ? t("settings.digitsBangla") : t("settings.digitsEnglish")}</span>
+            <SwitchKnob on={banglaDigits} />
           </button>
         </li>
-        <li className="flex flex-col gap-2 px-4 py-3">
-          <span className="flex items-center gap-3 text-base">
+        <li>
+          {/* resolvedTheme is unknown in the static HTML; wait for mount */}
+          <button type="button" role="switch" aria-checked={ready && resolvedTheme === "dark"} className={row} onClick={() => changeTheme(resolvedTheme === "dark" ? "light" : "dark")}>
             <SunMoon className="size-5" aria-hidden />
-            {t("settings.theme")}
-          </span>
-          <div role="group" aria-label={t("settings.theme")} className="grid grid-cols-3 gap-2">
-            {THEMES.map(({ id, key }) => (
-              <button
-                key={id}
-                type="button"
-                aria-pressed={ready && theme === id} // theme is unknown in the static HTML; wait for mount
-                onClick={() => changeTheme(id)}
-                className="min-h-11 rounded-lg border px-2 text-sm aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground"
-              >
-                {t(`settings.${key}`)}
-              </button>
-            ))}
-          </div>
+            <span className="flex-1">{t("settings.darkMode")}</span>
+            <SwitchKnob on={ready && resolvedTheme === "dark"} />
+          </button>
         </li>
         <li>
           <label className={row}>
@@ -118,8 +105,8 @@ export default function MorePage() {
           </label>
         </li>
         <InstallRow className={row} />
+        <QuickAddHelp className={row} />
       </ul>
-      <QuickAddHelp />
       {DemoDataSection && <DemoDataSection row={row} />}
     </main>
   );

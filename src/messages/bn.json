@@ -37,10 +37,7 @@
     "digits": "সংখ্যা",
     "digitsBangla": "বাংলা (১২৩)",
     "digitsEnglish": "ইংরেজি (123)",
-    "theme": "থিম",
-    "themeLight": "লাইট",
-    "themeDark": "ডার্ক",
-    "themeSystem": "ফোনের মতো"
+    "darkMode": "ডার্ক মোড"
   },
   "entries": {
     "title": "হিসাব",

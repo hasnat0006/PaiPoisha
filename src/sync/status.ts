@@ -12,6 +12,8 @@ export interface SyncStatus {
   /** False until the runner has checked for a saved session (the welcome page waits for it). */
   known: boolean;
   email: string | null;
+  /** Google profile photo URL, if the account has one. */
+  avatar?: string | null;
   pending: number; // local rows waiting to upload
   lastSyncedAt: string | null;
   /** The last failure's message (shown under "Couldn't sync"); null after a good sync. */

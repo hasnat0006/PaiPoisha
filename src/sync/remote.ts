@@ -13,7 +13,7 @@ export interface Cursor {
 }
 
 export interface Remote {
-  user(): Promise<{ id: string; email: string | null } | null>;
+  user(): Promise<{ id: string; email: string | null; avatar?: string | null } | null>;
   upsert(table: SyncedTable, rows: Record<string, unknown>[]): Promise<void>;
   /** Rows after `after` in (updated_at, id) order, at most `limit`. */
   pullPage(table: SyncedTable, after: Cursor | null, limit: number): Promise<RemoteRow[]>;
@@ -25,7 +25,7 @@ export function supabaseRemote(client: SupabaseClient): Remote {
       const { data, error } = await client.auth.getSession();
       if (error) throw error; // e.g. a token refresh that failed offline: retry, don't treat as signed out
       const u = data.session?.user;
-      return u ? { id: u.id, email: u.email ?? null } : null;
+      return u ? { id: u.id, email: u.email ?? null, avatar: u.user_metadata?.avatar_url ?? u.user_metadata?.picture ?? null } : null;
     },
     async upsert(table, rows) {
       const { error } = await client.from(table).upsert(rows, { onConflict: "id" });

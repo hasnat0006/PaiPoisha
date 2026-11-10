@@ -7,6 +7,8 @@ import { CategoryIcon, ICON_NAMES } from "@/components/entries/CategoryIcon";
 export const COLORS = [
   "#16a34a", "#0284c7", "#7c3aed", "#db2777", "#dc2626", "#ea580c",
   "#ca8a04", "#0891b2", "#4f46e5", "#b45309", "#e2136e", "#64748b",
+  "#65a30d", "#059669", "#0d9488", "#2563eb", "#1d4ed8", "#9333ea",
+  "#c026d3", "#e11d48", "#f43f5e", "#f59e0b", "#a8a29e", "#be123c",
 ];
 
 interface Props {
@@ -19,7 +21,7 @@ export function LookPicker({ color, icon, onChange }: Props) {
   const t = useTranslations("manage");
   return (
     <div className="flex flex-col gap-3">
-      <div role="radiogroup" aria-label={t("color")} className="flex flex-wrap gap-1">
+      <div role="radiogroup" aria-label={t("color")} className="grid grid-cols-6 gap-1">
         {COLORS.map((c, i) => (
           <button
             key={c}

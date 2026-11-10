@@ -32,7 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="bn" className="h-full antialiased font-sans" suppressHydrationWarning>
       <body className="min-h-full flex flex-col">
-        {/* Theme: Light / Dark / Match phone, picked on the More tab; next-themes stores it and avoids a flash on load. */}
+        {/* Theme: a Dark mode switch, picked on the More tab; next-themes stores it and avoids a flash on load. */}
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <I18nProvider>
             <AppShell>{children}</AppShell>

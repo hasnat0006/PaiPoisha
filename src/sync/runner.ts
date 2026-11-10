@@ -42,10 +42,10 @@ export function createRunner(remote: Remote) {
     // An error means a session exists but its token can't refresh yet: still signed in.
     const user = await remote.user().catch(() => undefined);
     if (user === null) {
-      setStatus({ state: "signed_out", known: true, email: null });
+      setStatus({ state: "signed_out", known: true, email: null, avatar: null });
       return settle();
     }
-    setStatus({ known: true, state: navigator.onLine ? "syncing" : "up_to_date", ...(user && { email: user.email }) });
+    setStatus({ known: true, state: navigator.onLine ? "syncing" : "up_to_date", ...(user && { email: user.email, avatar: user.avatar ?? null }) });
     if (!navigator.onLine) return settle(); // the "online" event starts the next try
     try {
       const res = await syncOnce(remote, user);

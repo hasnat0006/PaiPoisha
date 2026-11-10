@@ -13,7 +13,7 @@ import { SYNC_TOAST_ID, syncNow } from "./useSyncToasts";
 export function AccountSection({ row }: { row: string }) {
   const t = useTranslations("account");
   const tAll = useTranslations();
-  const { state, email, lastError } = useSyncStatus();
+  const { state, email, avatar, lastError } = useSyncStatus();
   /** "Sync now" always answers with a toast (user, 2026-11-08). */
   const onSyncNow = async () => {
     if (!navigator.onLine) return void notify.error(tAll("welcome.needsInternet"), { id: SYNC_TOAST_ID });
@@ -36,7 +36,12 @@ export function AccountSection({ row }: { row: string }) {
       ) : (
         <ul className="divide-y">
           <li className={row}>
-            <UserRound className="size-5" aria-hidden />
+            {avatar ? (
+              // eslint-disable-next-line @next/next/no-img-element -- static export: next/image would need a server
+              <img src={avatar} alt="" referrerPolicy="no-referrer" className="size-9 shrink-0 rounded-full" />
+            ) : (
+              <UserRound className="size-5" aria-hidden />
+            )}
             <span className="flex min-w-0 flex-1 flex-col">
               <span className="truncate">{email}</span>
               <span className={`text-sm ${state === "error" ? "text-destructive" : "text-muted-foreground"}`} role="status">
