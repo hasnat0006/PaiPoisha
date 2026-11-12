@@ -33,6 +33,14 @@ describe("buildSw", () => {
     expect(sw).toContain('const URLS = ["/font.woff2","/","/wallets/"];');
   });
 
+  it("only takes over when the page sends skip-waiting (the Update toast)", async () => {
+    const dir = await fakeOut();
+    await buildSw(dir);
+    const sw = await readFile(join(dir, "sw.js"), "utf8");
+    expect(sw).toContain('e.data === "skip-waiting"');
+    expect(sw.match(/skipWaiting\(\)/g)).toHaveLength(1); // not called on install
+  });
+
   it("changes the cache version when any file changes", async () => {
     const dir = await fakeOut();
     await buildSw(dir);

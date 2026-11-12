@@ -7,6 +7,7 @@ export const notify = {
     toast.dismiss("validation"); // the mistake it described is fixed now
     return toast.success(message, { duration: 2000, ...opts });
   },
+  info: (message: string, opts?: ExternalToast) => toast(message, opts),
   error: (message: string, opts?: ExternalToast) => toast.error(message, { duration: 5000, ...opts }),
   /** A form mistake, repeating the inline message. One id: tapping Save again replaces it instead of stacking. */
   invalid: (message: string) => toast.error(message, { duration: 5000, id: "validation" }),

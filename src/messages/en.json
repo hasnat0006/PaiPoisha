@@ -4,6 +4,8 @@
     "tagline": "Every taka, in one place"
   },
   "common": {
+    "updateReady": "A new version is ready",
+    "updateNow": "Update",
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",

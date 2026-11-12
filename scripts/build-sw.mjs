@@ -27,7 +27,11 @@ self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(URLS)));
 });
 
-// A new version waits until every tab of the old one is closed, so a running page never loses its files.
+// A new version waits until the page asks for it (the "Update" toast), so a running page never loses its files.
+self.addEventListener("message", (e) => {
+  if (e.data === "skip-waiting") self.skipWaiting();
+});
+
 self.addEventListener("activate", (e) => {
   e.waitUntil(
     caches.keys()

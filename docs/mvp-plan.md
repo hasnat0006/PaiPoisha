@@ -67,7 +67,6 @@ The MVP does one job well: record money in and out quickly, and show where it we
 - Transaction list: filter by month, wallet and category; text search
 - Language switch (বাংলা / English) and a Bangla-digits option
 - Dark mode
-- CSV export
 - Works offline; installable to the home screen
 - Quick add by link (for iOS Shortcuts; see below)
 
@@ -241,7 +240,7 @@ One list of every entry, newest first, grouped by day with a daily total.
 | Theme | Light / Dark / Match phone | Match phone |
 | Month starts on | Day 1–28 | 1 |
 | Account | Google email, sync status, Sync now, Sign out | — |
-| Data | Export CSV, Manage wallets, Manage categories | — |
+| Data | Manage wallets, Manage categories | — |
 | Quick add | Copy my quick-add link, Install iOS Shortcut | — |
 | About | Version, privacy policy, send feedback | — |
 
@@ -251,15 +250,6 @@ One list of every entry, newest first, grouped by day with a daily total.
 - Every on-screen text comes from the translation files; no hard-coded words. A missing translation falls back to English, and is logged during development.
 - Dates follow the language: "৭ নভেম্বর ২০২৬" or "7 Nov 2026".
 - Amounts typed with Bangla digits are accepted too.
-
-**CSV export**
-
-- Columns: Date, Type, Amount, Wallet, To wallet, Category, Note.
-- Filters: a date range (default: all time).
-- The file is UTF-8 with a BOM, so Bangla text opens correctly in Excel. Amounts are written in English digits with no ৳ sign, so spreadsheets can add them up.
-- File name: `money-export-2026-11-07.csv`.
-
-**Done when:** a Bangla-language export opens in Excel and Google Sheets with readable Bangla text and summable amounts.
 
 ### 9. Quick-add link
 
@@ -327,7 +317,7 @@ The MVP must feel fast on a budget Android phone on a slow mobile connection, si
 
 **Testing**
 
-- Unit tests (Vitest) for money logic: balances, budget periods, paisa conversion, CSV export.
+- Unit tests (Vitest) for money logic: balances, budget periods, paisa conversion.
 - One end-to-end test (Playwright) of the core flow: onboarding → add → edit → delete → sync.
 - Manual check on both test phones before each release, in both languages.
 
@@ -403,7 +393,7 @@ Seven screens, with a bottom tab bar (Home · Transactions · + · Budgets · Mo
 | Transactions | Grouped by day; filter by month, wallet, category; search |
 | Budgets | Bar per category: spent / limit, turns red over 90% |
 | Wallets | List with balances; add, edit, archive |
-| Settings | Language, digits, theme, month start day, account and sync status, CSV export, Shortcut setup |
+| Settings | Language, digits, theme, month start day, account and sync status, Shortcut setup |
 
 Design rule: adding an expense should take at most 3 taps plus typing the amount.
 
@@ -417,7 +407,7 @@ Build the offline app first, then add login and sync. That way every step is usa
 - [ ] 2\. Dexie database with the 5 tables; add and list transactions (offline, no login)
 - [ ] 3\. Wallets, categories (bilingual defaults), and wallet balances
 - [ ] 4\. Home dashboard and the transaction list with filters
-- [ ] 5\. Budgets and CSV export
+- [ ] 5\. Budgets
 - [ ] 6\. PWA: install prompt, offline caching, app icon
 - [ ] 7\. Supabase: tables + Row Level Security, Google login, push/pull sync
 - [ ] 8\. Quick-add link + a shareable iOS Shortcut

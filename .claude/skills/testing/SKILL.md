@@ -16,7 +16,7 @@ description: What to test and how in the money app (Vitest, fake-indexeddb, Test
 
 | Code | Required |
 | --- | --- |
-| `src/lib/*` (money, periods, totals, CSV, parsing) | Yes, including edge cases (see `money-rules`) |
+| `src/lib/*` (money, periods, totals, parsing) | Yes, including edge cases (see `money-rules`) |
 | `src/db/repo.ts`, schema upgrades | Yes |
 | `src/sync/*` | Yes (list in `sync-engine`) |
 | Hooks with logic | Yes, if they do more than call a lib function |
