@@ -4,6 +4,7 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { notify } from "@/components/common/notify";
+import { FieldSelect } from "@/components/entries/FieldSelect";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
@@ -72,16 +73,7 @@ function BudgetForm({ editing, month, data, taken, onOpenChange }: Props) {
   return (
     <div className="flex flex-col gap-3 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
       {!editing && (
-        <select
-          className="min-h-11 rounded-lg border bg-background px-2 text-base"
-          value={target}
-          onChange={(e) => setTarget(e.target.value)}
-          aria-label={t("category")}
-        >
-          {choices.map((c) => (
-            <option key={c.id} value={c.id}>{c.label}</option>
-          ))}
-        </select>
+        <FieldSelect label={t("category")} placeholder={t("category")} options={choices} value={target} onChange={setTarget} />
       )}
       <label className="flex flex-col gap-1 text-sm text-muted-foreground">
         {t("limit")}

@@ -13,8 +13,8 @@ const renderMore = () =>
       <I18nProvider><AppShell><MorePage /></AppShell></I18nProvider>
     </ThemeProvider>,
   );
-/** First "Month starts on" option: shows which digits are in use. */
-const firstDay = () => (screen.getByLabelText(/Month starts on|মাস শুরু হয়/) as HTMLSelectElement).options[0].textContent;
+/** The "Month starts on" dropdown's shown day (1 by default): shows which digits are in use. */
+const firstDay = () => screen.getByLabelText(/Month starts on|মাস শুরু হয়/).textContent?.replace("▼", ""); // the trigger's arrow
 const settingsRow = async () => (await db.settings.toArray())[0];
 
 beforeEach(async () => {

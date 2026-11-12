@@ -11,6 +11,7 @@ import { SwitchKnob } from "@/components/common/SwitchKnob";
 import { InstallRow } from "@/components/shell/InstallRow";
 import { AccountSection } from "@/components/sync/AccountSection";
 import { QuickAddHelp } from "@/components/shell/QuickAddHelp";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import type { Theme } from "@/db/types";
 import { useEntries } from "@/features/entries/useEntries";
 import { saveSettings, setMonthStartDay } from "@/features/settings/settingsActions";
@@ -31,6 +32,7 @@ export default function MorePage() {
   const { resolvedTheme, setTheme } = useTheme();
   const state = useEntries(ready ? t("entries.cashWallet") : null);
   const saveError = () => notify.error(t("common.saveError"));
+  const showDay = (d: number) => (banglaDigits ? toBanglaDigits(String(d)) : String(d));
   const changeStartDay = (day: number) => setMonthStartDay(day, locale).catch(saveError);
   const changeLanguage = () => {
     const l = locale === "bn" ? "en" : "bn";
@@ -89,20 +91,20 @@ export default function MorePage() {
           </button>
         </li>
         <li>
-          <label className={row}>
+          <div className={row}>
             <CalendarDays className="size-5" aria-hidden />
             <span className="flex-1">{t("settings.monthStart")}</span>
-            <select
-              className="min-h-11 rounded-lg border bg-background px-2 text-base tabular-nums"
-              value={state.status === "ready" ? state.startDay : 1}
-              disabled={state.status !== "ready"}
-              onChange={(e) => changeStartDay(Number(e.target.value))}
-            >
-              {DAYS.map((d) => (
-                <option key={d} value={d}>{banglaDigits ? toBanglaDigits(String(d)) : d}</option>
-              ))}
-            </select>
-          </label>
+            <Select value={String(state.status === "ready" ? state.startDay : 1)} disabled={state.status !== "ready"} onValueChange={(d) => d && changeStartDay(Number(d))}>
+              <SelectTrigger aria-label={t("settings.monthStart")} className="min-h-11 w-20 px-3 text-base tabular-nums">
+                {showDay(state.status === "ready" ? state.startDay : 1)}
+              </SelectTrigger>
+              <SelectContent alignItemWithTrigger={false} className="max-h-[min(var(--available-height),20rem)]">
+                {DAYS.map((d) => (
+                  <SelectItem key={d} value={String(d)} className="min-h-11 text-base tabular-nums">{showDay(d)}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </li>
         <InstallRow className={row} />
         <QuickAddHelp className={row} />
