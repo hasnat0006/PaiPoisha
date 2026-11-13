@@ -1,0 +1,46 @@
+# Daily encrypted backup of the Supabase database (setup and restore: docs/backups.md).
+# The repo is public, so anyone signed in to GitHub can download artifacts: the dump is
+# encrypted with BACKUP_PASSPHRASE before upload, and only the encrypted file leaves the runner.
+name: Database backup
+
+on:
+  schedule:
+    - cron: "30 21 * * *" # 03:30 in Dhaka
+  workflow_dispatch: # "Run workflow" button for a manual backup
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Install pg_dump 17 (must match the server's Postgres 17)
+        run: |
+          sudo apt-get install -y postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y postgresql-client-17
+
+      - name: Dump, compress and encrypt
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          test -n "$DATABASE_URL" || { echo "DATABASE_URL secret is missing"; exit 1; }
+          test -n "$BACKUP_PASSPHRASE" || { echo "BACKUP_PASSPHRASE secret is missing"; exit 1; }
+          # Data only: the tables themselves come from supabase/migrations. auth.users/identities keep user_id links valid.
+          /usr/lib/postgresql/17/bin/pg_dump "$DATABASE_URL" --data-only --no-owner --no-privileges \
+            -t 'public.*' -t auth.users -t auth.identities \
+            | gzip -9 \
+            | openssl enc -aes-256-cbc -pbkdf2 -iter 600000 -salt -pass env:BACKUP_PASSPHRASE -out backup.sql.gz.enc
+          test -s backup.sql.gz.enc
+          echo "STAMP=$(date -u +%Y-%m-%d)" >> "$GITHUB_ENV"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: db-backup-${{ env.STAMP }}
+          path: backup.sql.gz.enc
+          retention-days: 90
+          if-no-files-found: error
