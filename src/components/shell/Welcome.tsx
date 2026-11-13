@@ -2,6 +2,7 @@
 "use client";
 
 import { Check } from "lucide-react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { GoogleButton } from "@/components/sync/GoogleButton";
@@ -59,6 +60,9 @@ export function Welcome({ onSkip }: { onSkip: () => void }) {
         <Button variant="ghost" className="min-h-11 text-base" onClick={onSkip}>
           {t("welcome.skip")}
         </Button>
+        <Link href="/privacy/" className="flex min-h-11 items-center justify-center text-sm text-muted-foreground underline underline-offset-2">
+          {t("privacy.title")}
+        </Link>
       </div>
     </main>
   );

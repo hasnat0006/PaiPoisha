@@ -48,7 +48,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [skipped, setSkipped] = useState<boolean | null>(null);
   const gate = welcomeGate({
     configured: syncConfigured(),
-    onCallback: pathname.startsWith("/auth/"),
+    onCallback: pathname.startsWith("/auth/") || pathname.startsWith("/privacy"), // the policy must open for anyone (Google checks it)
     skipped,
     entries: entryCount,
     known: sync.known,

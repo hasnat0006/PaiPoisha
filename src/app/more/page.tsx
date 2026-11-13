@@ -1,7 +1,7 @@
 "use client";
 
 // More tab: Account (sign-in, sync), Wallets, Categories, the settings of spec §8 (language, digits, theme, month start day), install, quick-add link.
-import { CalendarDays, ChevronRight, Hash, Languages, Shapes, SunMoon, Wallet } from "lucide-react";
+import { CalendarDays, ChevronRight, Hash, Languages, Shapes, ShieldCheck, SunMoon, Wallet } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -108,6 +108,13 @@ export default function MorePage() {
         </li>
         <InstallRow className={row} />
         <QuickAddHelp className={row} />
+        <li>
+          <Link href="/privacy/" className={row}>
+            <ShieldCheck className="size-5" aria-hidden />
+            <span className="flex-1">{t("privacy.title")}</span>
+            <ChevronRight className="size-5 text-muted-foreground" aria-hidden />
+          </Link>
+        </li>
       </ul>
       {DemoDataSection && <DemoDataSection row={row} />}
     </main>

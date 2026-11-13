@@ -269,7 +269,13 @@
     "signOutUnsynced": "{count, plural, one {# change hasn't} other {# changes haven't}} synced yet and will be lost if you sign out now.",
     "signOutAnyway": "Sign out anyway",
     "checking": "Checking…",
-    "signOutError": "Couldn't sign out. Please try again."
+    "signOutError": "Couldn't sign out. Please try again.",
+    "delete": "Delete my account and data",
+    "deleteTitle": "Delete your account?",
+    "deleteBody": "This permanently deletes your account and every entry, wallet, category and budget from our servers and from this phone. It can't be undone. Other phones keep their copy until you sign out there.",
+    "deleteConfirm": "Delete forever",
+    "deleting": "Deleting…",
+    "deleteError": "Couldn't delete your account. Please try again."
   },
   "demo": {
     "title": "Developer",
@@ -279,5 +285,31 @@
     "removed": "Demo data removed",
     "signOutFirst": "Sign out first: demo data would upload to your account.",
     "error": "Couldn't change demo data"
+  },
+  "privacy": {
+    "title": "Privacy & terms",
+    "updated": "Last updated: 13 November 2026",
+    "intro": "PaiPoisha is a free money tracker. Your money records are yours: we keep only what the app needs to work, and we never sell or share them.",
+    "storeTitle": "What we store",
+    "storeBody": "What you type into the app: entries, wallets, categories, budgets and settings. If you sign in with Google, we also get your name, email address and profile photo from Google. PaiPoisha never connects to your bKash, Nagad, Rocket, bank or card accounts, and never asks for their PINs or passwords: you type the amounts yourself.",
+    "whereTitle": "Where it is kept",
+    "whereBody": "On your phone, in the browser's storage. If you sign in, a copy is kept safely in the cloud so you can use the app on more than one device and get your data back if you lose your phone. Each account can read only its own data.",
+    "neverTitle": "What we never do",
+    "neverBody": "No ads, and we never sell your data or share it with anyone. We count page visits anonymously (no cookies, no amounts, nothing that identifies you) to see how the app is used.",
+    "othersTitle": "Services we use",
+    "othersBody": "We use Google for sign-in, and trusted cloud services to keep your data and run the app. They handle it only to provide this service.",
+    "deleteTitle": "Deleting your data",
+    "deleteBody": "Signed in: open More → Delete my account and data. Your account and all its data are removed from our servers at once, and from that phone. Not signed in: your data is only on your phone; clearing this site's data or removing the app deletes it.",
+    "contactTitle": "Contact",
+    "contactBody": "Questions or problems? <link>Open an issue on GitHub</link>.",
+    "termsTitle": "Terms of use",
+    "freeTitle": "Free, as it is",
+    "freeBody": "PaiPoisha is free to use and is provided as it is, without any guarantee. We do our best to keep your data safe and the app working, but we can't promise it will always be available or free of mistakes.",
+    "notBankTitle": "Not a bank, not advice",
+    "notBankBody": "PaiPoisha only keeps a record of what you type. It does not hold or move money, and nothing in it is financial advice.",
+    "yoursTitle": "Your part",
+    "yoursBody": "You are responsible for what you enter and for keeping your Google account and phone secure.",
+    "changesTitle": "Changes",
+    "changesBody": "We may update the app, this policy or these terms. When we do, we'll change the date at the top of this page."
   }
 }

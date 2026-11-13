@@ -82,6 +82,14 @@ export async function unsyncedAfterSync(): Promise<number> {
   return pendingCount();
 }
 
+/** Deletes the account and all its cloud data (migration 0004), then wipes this phone. Needs internet. */
+export async function deleteAccountAndWipe(go?: (url: string) => void): Promise<void> {
+  if (!supabase) throw new Error("Supabase is not configured");
+  const { error } = await supabase.rpc("delete_my_account");
+  if (error) throw error;
+  await signOutAndWipe(go);
+}
+
 /**
  * Sign out, then wipe this phone so the next person sees nothing (spec §10). Uploading first is
  * the caller's job (`unsyncedAfterSync`). `scope: "local"` works offline; the server session expires on its own.

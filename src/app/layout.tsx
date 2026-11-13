@@ -6,6 +6,7 @@ import "@fontsource/hind-siliguri/600.css";
 import "@fontsource/hind-siliguri/700.css";
 import { ThemeProvider } from "next-themes";
 import { AppShell } from "@/components/shell/AppShell";
+import { VercelAnalytics } from "@/components/shell/VercelAnalytics";
 import { Toaster } from "@/components/ui/sonner";
 import { I18nProvider } from "@/i18n/provider";
 import "./globals.css";
@@ -38,6 +39,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <AppShell>{children}</AppShell>
             <Toaster position="top-center" />
           </I18nProvider>
+          <VercelAnalytics />
+
         </ThemeProvider>
       </body>
     </html>

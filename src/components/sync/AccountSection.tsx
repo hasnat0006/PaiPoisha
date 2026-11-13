@@ -5,6 +5,7 @@ import { RefreshCw, UserRound } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { notify } from "@/components/common/notify";
 import { getStatus, syncConfigured, useSyncStatus } from "@/sync/status";
+import { DeleteAccountDialog } from "./DeleteAccountDialog";
 import { GoogleButton } from "./GoogleButton";
 import { SignOutDialog } from "./SignOutDialog";
 import { useSyncLine } from "./useSyncLine";
@@ -58,6 +59,9 @@ export function AccountSection({ row }: { row: string }) {
           </li>
           <li>
             <SignOutDialog className={row} />
+          </li>
+          <li>
+            <DeleteAccountDialog className={row} />
           </li>
         </ul>
       )}
