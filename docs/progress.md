@@ -15,7 +15,7 @@ Roadmap from `docs/mvp-plan.md`. Tick a step only when `npm run check` passes an
 - [x] 6. PWA: install prompt, offline caching (own service worker, not Serwist), app icons (placeholder ৳)
 - [x] 7. Supabase: run the migrations, Google login, push/pull sync: spec §1, §10 (two-device test passed, user, 2026-11-13)
 - [x] 8. Quick-add link (`/add?…`) and Android app shortcuts: spec §9
-  - [ ] 8b. iOS Shortcut, changed (user, 2026-11-09) to save **without opening the app** (Phase 2 item pulled forward): migration 0003 applied, More-tab key + steps built. Waiting for the user to build the Shortcut from `docs/ios-shortcut.md`, share its iCloud link (`SHORTCUT_URL`) and test it on the iPhone
+  - [ ] 8b. iOS Shortcut, changed (user, 2026-11-09) to save **without opening the app** (Phase 2 item pulled forward): migration 0003 applied, More-tab key + steps built. Waiting for the user to build the Shortcut from `docs/ios-shortcut.md`, share its iCloud link (`SHORTCUT_URL`) and test it on the iPhone. 2026-11-14: Shortcut works; edit menu (category, wallet, date) added with migration 0006, waiting for the user to apply 0006 and rebuild steps 7–8
 - [ ] 9. Beta test with 10–20 people on Android and iPhone
 
 ## Phase 2

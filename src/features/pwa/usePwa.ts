@@ -41,7 +41,9 @@ export function useServiceWorker() {
     sw.register("/sw.js").then(
       (r) => {
         reg = r;
-        if (r.waiting && sw.controller) offer(r.waiting);
+        // Found waiting at launch: the page has only just opened, so nothing is lost by switching now.
+        // iOS home-screen apps rarely let a waiting worker take over on their own, so don't wait for a tap.
+        if (r.waiting && sw.controller) r.waiting.postMessage("skip-waiting");
         r.addEventListener("updatefound", () => {
           const w = r.installing;
           w?.addEventListener("statechange", () => w.state === "installed" && sw.controller && offer(w));
