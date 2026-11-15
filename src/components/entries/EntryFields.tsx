@@ -2,7 +2,8 @@
 // and wallet as dropdowns, then the date (Today or any picked day) and the note.
 "use client";
 
-import { useTranslations } from "next-intl";
+import { CalendarDays } from "lucide-react";
+import { useFormatter, useTranslations } from "next-intl";
 import type { Category } from "@/db/types";
 import type { EntriesData } from "@/features/entries/useEntries";
 import type { useEntryForm } from "@/features/entries/useEntryForm";
@@ -10,6 +11,9 @@ import { useLocale } from "@/i18n/provider";
 import { categoryName, dhakaDay, NOTE_MAX } from "@/lib/entries";
 import { CategoryIcon } from "./CategoryIcon";
 import { FIELD_LABEL, FieldSelect } from "./FieldSelect";
+
+/** The dropdown trigger's look (ui/select), so the date row matches the rows above it. */
+const CONTROL = "flex min-h-11 items-center rounded-lg border border-input text-base transition-colors dark:bg-input/30";
 
 interface Props {
   data: EntriesData;
@@ -19,6 +23,7 @@ interface Props {
 
 export function EntryFields({ data, form, categories }: Props) {
   const t = useTranslations("entries");
+  const format = useFormatter();
   const { locale } = useLocale();
   const { draft, set, errors } = form;
   const today = dhakaDay(new Date());
@@ -62,19 +67,25 @@ export function EntryFields({ data, form, categories }: Props) {
           type="button"
           aria-pressed={draft.day === today}
           onClick={() => set({ day: today })}
-          className="min-h-11 shrink-0 rounded-md border px-4 text-sm aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground"
+          className={`${CONTROL} shrink-0 px-4 aria-pressed:border-brand aria-pressed:bg-brand/10 aria-pressed:text-brand`}
         >
           {t("today")}
         </button>
-        <input
-          type="date"
-          lang={locale}
-          max={today}
-          value={draft.day}
-          onChange={(e) => e.target.value && set({ day: e.target.value })}
-          aria-label={t("pickDate")}
-          className="min-h-11 min-w-0 flex-1 rounded-md border bg-background px-3 text-sm"
-        />
+        {/* Same look as the dropdowns above: the day in words, with the native picker invisible on top. */}
+        <label className={`${CONTROL} relative min-w-0 flex-1 justify-between gap-2 px-3 ${draft.day !== today ? "border-brand text-brand" : ""}`}>
+          <span className="truncate">{format.dateTime(new Date(`${draft.day}T12:00:00+06:00`), { day: "numeric", month: "short", year: "numeric" })}</span>
+          <CalendarDays className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+          <input
+            type="date"
+            lang={locale}
+            max={today}
+            value={draft.day}
+            onChange={(e) => e.target.value && set({ day: e.target.value })}
+            onClick={(e) => e.currentTarget.showPicker?.()} // desktop Chrome opens the picker only from its own icon
+            aria-label={t("pickDate")}
+            className="absolute inset-0 size-full cursor-pointer opacity-0"
+          />
+        </label>
       </div>
       <input
         type="text"
