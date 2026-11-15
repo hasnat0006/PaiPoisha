@@ -1,16 +1,15 @@
 "use client";
 
-// More tab: Account (sign-in, sync), Wallets, Categories, the settings of spec §8 (language, digits, theme, month start day), install, quick-add link.
-import { CalendarDays, ChevronRight, Hash, Languages, Shapes, ShieldCheck, SunMoon, Wallet } from "lucide-react";
+// More tab: Account (sign-in, sync), Wallets, Categories, the settings of spec §8 (language — digits follow it —, theme, month start day), add to home screen.
+import { CalendarDays, ChevronRight, Languages, Shapes, ShieldCheck, SunMoon, Wallet } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { notify } from "@/components/common/notify";
 import { SwitchKnob } from "@/components/common/SwitchKnob";
-import { InstallRow } from "@/components/shell/InstallRow";
 import { AccountSection } from "@/components/sync/AccountSection";
-import { QuickAddHelp } from "@/components/shell/QuickAddHelp";
+import { HomeScreenGuide } from "@/components/shell/HomeScreenGuide";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import type { Theme } from "@/db/types";
 import { useEntries } from "@/features/entries/useEntries";
@@ -28,7 +27,7 @@ const row = "flex min-h-14 w-full items-center gap-3 px-4 text-left text-base";
 
 export default function MorePage() {
   const t = useTranslations();
-  const { locale, setLocale, ready, banglaDigits, setBanglaDigits } = useLocale();
+  const { locale, setLocale, ready, banglaDigits } = useLocale();
   const { resolvedTheme, setTheme } = useTheme();
   const state = useEntries(ready ? t("entries.cashWallet") : null);
   const saveError = () => notify.error(t("common.saveError"));
@@ -38,10 +37,6 @@ export default function MorePage() {
     const l = locale === "bn" ? "en" : "bn";
     setLocale(l);
     saveSettings({ bangla_digits: l === "bn" }, l).catch(saveError);
-  };
-  const changeDigits = () => {
-    setBanglaDigits(!banglaDigits);
-    saveSettings({ bangla_digits: !banglaDigits }, locale).catch(saveError);
   };
   const changeTheme = (id: Theme) => {
     setTheme(id);
@@ -75,14 +70,6 @@ export default function MorePage() {
           </button>
         </li>
         <li>
-          <button type="button" role="switch" aria-checked={banglaDigits} className={row} onClick={changeDigits}>
-            <Hash className="size-5" aria-hidden />
-            <span className="flex-1">{t("settings.digits")}</span>
-            <span className="text-muted-foreground">{banglaDigits ? t("settings.digitsBangla") : t("settings.digitsEnglish")}</span>
-            <SwitchKnob on={banglaDigits} />
-          </button>
-        </li>
-        <li>
           {/* resolvedTheme is unknown in the static HTML; wait for mount */}
           <button type="button" role="switch" aria-checked={ready && resolvedTheme === "dark"} className={row} onClick={() => changeTheme(resolvedTheme === "dark" ? "light" : "dark")}>
             <SunMoon className="size-5" aria-hidden />
@@ -106,8 +93,7 @@ export default function MorePage() {
             </Select>
           </div>
         </li>
-        <InstallRow className={row} />
-        <QuickAddHelp className={row} />
+        <HomeScreenGuide className={row} />
         <li>
           <Link href="/privacy/" className={row}>
             <ShieldCheck className="size-5" aria-hidden />

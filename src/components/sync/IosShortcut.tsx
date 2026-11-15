@@ -1,24 +1,30 @@
-// More tab → Quick add → iPhone Shortcut: make a personal key, install the ready-made Shortcut,
-// which saves an expense without opening the app (migration 0003). Signed-in users only.
+// iPhone Shortcut key: the personal key the ready-made Shortcut needs (it saves an expense without opening
+// the app, migration 0003). Signed-in users only.
+// shortcut: not shown anywhere since 2026-11-15 (user: More shows only the home-screen guide for now); put it back
+// in a sheet when the iPhone Shortcut (step 8b) ships.
 "use client";
 
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 import { notify } from "@/components/common/notify";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { syncConfigured, useSyncStatus } from "@/sync/status";
 
 /** iCloud link of the ready-made Shortcut; empty until it's published (the Install button hides). */
 export const SHORTCUT_URL = "";
 
-export function IosShortcut() {
+/** The iPhone path needs the server; a local-only build has none. */
+export const iosShortcutAvailable = syncConfigured;
+
+/** "Make my key" → the key, shown once, to copy. Signed out: a sign-in hint instead. */
+export function ShortcutKey() {
   const t = useTranslations("shortcut");
   const { state } = useSyncStatus();
   const [key, setKey] = useState("");
   const [busy, setBusy] = useState(false);
-  if (!syncConfigured()) return null; // local-only build: no server to save to
+
+  if (state === "signed_out") return <p className="text-sm text-muted-foreground">{t("signIn")}</p>;
 
   const makeKey = async () => {
     if (!navigator.onLine) return void notify.error(t("keyError"));
@@ -41,44 +47,26 @@ export function IosShortcut() {
   };
 
   return (
-    <details className="text-sm">
-      <summary className="flex min-h-11 cursor-pointer items-center font-medium">{t("title")}</summary>
-      <div className="flex flex-col gap-3 text-muted-foreground">
-        <p>{t("intro")}</p>
-        {state === "signed_out" ? (
-          <p>{t("signIn")}</p>
-        ) : (
-          <>
-            <p>{t("step1")}</p>
-            {key ? (
-              <div className="flex gap-2">
-                <input
-                  readOnly
-                  value={key}
-                  aria-label={t("keyLabel")}
-                  onFocus={(e) => e.target.select()}
-                  className="min-h-11 min-w-0 flex-1 rounded-md border bg-muted px-2 font-mono text-xs text-foreground"
-                />
-                <Button variant="outline" className="min-h-11 shrink-0 px-4" onClick={copy}>
-                  {t("copy")}
-                </Button>
-              </div>
-            ) : (
-              <Button variant="outline" className="min-h-11" disabled={busy} onClick={() => void makeKey()}>
-                {t("makeKey")}
-              </Button>
-            )}
-            <p>{t("keyNote")}</p>
-            <p>{t("step2")}</p>
-            {SHORTCUT_URL && (
-              <a href={SHORTCUT_URL} target="_blank" rel="noreferrer" className={cn(buttonVariants(), "min-h-11")}>
-                {t("install")}
-              </a>
-            )}
-            <p>{t("step3")}</p>
-          </>
-        )}
-      </div>
-    </details>
+    <div className="flex flex-col gap-2">
+      {key ? (
+        <div className="flex gap-2">
+          <input
+            readOnly
+            value={key}
+            aria-label={t("keyLabel")}
+            onFocus={(e) => e.target.select()}
+            className="min-h-11 min-w-0 flex-1 rounded-md border bg-muted px-2 font-mono text-xs text-foreground"
+          />
+          <Button variant="outline" className="min-h-11 shrink-0 px-4" onClick={copy}>
+            {t("copy")}
+          </Button>
+        </div>
+      ) : (
+        <Button variant="outline" className="min-h-11" disabled={busy} onClick={() => void makeKey()}>
+          {t("makeKey")}
+        </Button>
+      )}
+      <p className="text-sm text-muted-foreground">{t("keyNote")}</p>
+    </div>
   );
 }

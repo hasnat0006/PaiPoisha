@@ -1,4 +1,4 @@
-// Roadmap step 5b (spec §8 Settings): digits and theme on the More tab — applied at once, remembered, recorded in the settings row.
+// Roadmap step 5b (spec §8 Settings): language (digits follow it) and theme on the More tab — applied at once, remembered, recorded in the settings row.
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { ThemeProvider } from "next-themes";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -28,26 +28,17 @@ beforeEach(async () => {
 afterEach(cleanup);
 
 describe("settings on the More tab", () => {
-  it("switches digits, remembers a manual choice, and resets it when the language changes", async () => {
+  it("has no digits switch: digits follow the language and the choice is recorded", async () => {
     renderMore();
     await waitFor(() => expect(firstDay()).toBe("1"));
+    expect(screen.queryByRole("switch", { name: /Digits/ })).toBeNull();
 
-    fireEvent.click(screen.getByRole("switch", { name: /Digits/ }));
-    await waitFor(() => expect(firstDay()).toBe("১"));
-    expect(localStorage.getItem("mm.digits")).toBe("bn");
-    await waitFor(async () => expect((await settingsRow())?.bangla_digits).toBe(true));
-
-    // remembered after a restart
-    cleanup();
-    renderMore();
-    await waitFor(() => expect(firstDay()).toBe("১"));
-
-    // language change → digits follow the new language's default; the manual choice is gone
     fireEvent.click(screen.getByRole("switch", { name: /Language/ }));
-    await screen.findByRole("switch", { name: /ভাষা/ });
-    fireEvent.click(screen.getByRole("switch", { name: /ভাষা/ }));
+    await waitFor(() => expect(firstDay()).toBe("১"));
+    await waitFor(async () => expect(await settingsRow()).toMatchObject({ language: "bn", bangla_digits: true }));
+
+    fireEvent.click(await screen.findByRole("switch", { name: /ভাষা/ }));
     await waitFor(() => expect(firstDay()).toBe("1"));
-    expect(localStorage.getItem("mm.digits")).toBeNull();
     await waitFor(async () => expect(await settingsRow()).toMatchObject({ language: "en", bangla_digits: false }));
   });
 

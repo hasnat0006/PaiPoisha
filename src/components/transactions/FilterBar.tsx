@@ -1,4 +1,4 @@
-// Search + combinable filters (period, type, wallet, category), with removable chips (spec §7).
+// Search + combinable filters (period or custom dates, type, wallet, category), with removable chips (spec §7).
 "use client";
 
 import { X } from "lucide-react";
@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import type { TransactionType } from "@/db/types";
 import type { EntriesData } from "@/features/entries/useEntries";
 import { useLocale } from "@/i18n/provider";
-import { categoryName } from "@/lib/entries";
+import { categoryName, dhakaDay } from "@/lib/entries";
 import type { Filters } from "@/lib/filter";
 import { getPeriod } from "@/lib/period";
 
@@ -20,6 +20,7 @@ export function FilterBar({ f, set, data }: { f: Filters; set: (c: Partial<Filte
   const te = useTranslations("entries");
   const format = useFormatter();
   const { locale } = useLocale();
+  const today = dhakaDay(new Date());
   const catName = (id: string) => {
     const c = data.categories.find((x) => x.id === id);
     return c ? categoryName(c, locale) : "";
@@ -28,6 +29,10 @@ export function FilterBar({ f, set, data }: { f: Filters; set: (c: Partial<Filte
   const chips: { label: string; clear: Partial<Filters> }[] = [];
   if (f.period)
     chips.push({ label: format.dateTime(new Date(`${f.period.key}-15T12:00:00+06:00`), { month: "long", year: "numeric" }), clear: { period: null } });
+  if (f.range) {
+    const day = (d: string) => format.dateTime(new Date(`${d}T12:00:00+06:00`), { day: "numeric", month: "short", year: "numeric" });
+    chips.push({ label: `${day(f.range.from)} – ${day(f.range.to)}`, clear: { range: null } });
+  }
   if (f.type) chips.push({ label: te(f.type), clear: { type: null } });
   if (f.walletId) chips.push({ label: data.wallets.find((w) => w.id === f.walletId)?.name ?? "", clear: { walletId: null } });
   if (f.categoryId) chips.push({ label: catName(f.categoryId), clear: { categoryId: null } });
@@ -39,11 +44,20 @@ export function FilterBar({ f, set, data }: { f: Filters; set: (c: Partial<Filte
         <select
           className={selectCls}
           aria-label={t("period")}
-          value={f.period ? "month" : ""}
-          onChange={(e) => set({ period: e.target.value ? getPeriod(new Date(), data.startDay) : null })}
+          value={f.period ? "month" : f.range ? "range" : ""}
+          onChange={(e) => {
+            const v = e.target.value;
+            const month = getPeriod(new Date(), data.startDay);
+            set({
+              period: v === "month" ? month : null,
+              // start with this period's first day through today
+              range: v === "range" ? { from: dhakaDay(month.start), to: today } : null,
+            });
+          }}
         >
           <option value="">{t("allTime")}</option>
           <option value="month">{t("byMonth")}</option>
+          <option value="range">{t("customRange")}</option>
         </select>
         <select className={selectCls} aria-label={t("type")} value={f.type ?? ""} onChange={(e) => set({ type: (e.target.value || null) as TransactionType | null })}>
           <option value="">{t("allTypes")}</option>
@@ -66,6 +80,24 @@ export function FilterBar({ f, set, data }: { f: Filters; set: (c: Partial<Filte
           ))}
         </select>
       </div>
+      {f.range && (
+        <div className="flex gap-2">
+          {(["from", "to"] as const).map((k) => (
+            <label key={k} className="flex min-w-0 flex-1 flex-col gap-1 text-sm text-muted-foreground">
+              {t(k)}
+              <input
+                type="date"
+                lang={locale}
+                value={f.range![k]}
+                min={k === "to" ? f.range!.from : undefined}
+                max={k === "from" ? f.range!.to : undefined}
+                onChange={(e) => e.target.value && set({ range: { ...f.range!, [k]: e.target.value } })}
+                className="min-h-11 min-w-0 rounded-lg border bg-background px-2 text-base text-foreground"
+              />
+            </label>
+          ))}
+        </div>
+      )}
       {f.period && <PeriodSwitcher period={f.period} startDay={data.startDay} onChange={(period) => set({ period })} />}
       {chips.length > 0 && (
         <ul className="flex flex-wrap gap-2" aria-label={t("activeFilters")}>

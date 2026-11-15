@@ -12,6 +12,7 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "promo/**", // promo video project, its own package
   ]),
 ]);
 

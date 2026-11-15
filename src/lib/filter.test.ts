@@ -25,6 +25,14 @@ const entries = [
 ];
 
 describe("filterEntries", () => {
+  it("custom dates include both end days in Dhaka time", () => {
+    const amounts = (from: string, to: string) =>
+      filterEntries(entries, { ...NO_FILTERS, walletId: "bkash", categoryId: "transport", range: { from, to } }, cats).map((t) => t.amount_paisa);
+    expect(amounts("2026-09-30", "2026-10-10")).toEqual([12000, 4500, 2000]); // 30 Sep 23:59 Dhaka counts (18:59 UTC)
+    expect(amounts("2026-10-10", "2026-10-10")).toEqual([12000, 4500]);
+    expect(amounts("2026-10-11", "2026-11-01")).toEqual([9900]); // 1 Nov 00:00 Dhaka = 31 Oct UTC, still 1 Nov
+  });
+
   it("bKash + Transport + October shows exactly the right entries and total (spec §7 Done when)", () => {
     const f = { ...NO_FILTERS, walletId: "bkash", categoryId: "transport", period: periodFromKey("2026-10", 1) };
     const rows = filterEntries(entries, f, cats);

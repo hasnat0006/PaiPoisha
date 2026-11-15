@@ -1,4 +1,4 @@
-// iPhone Shortcut setup on the More tab: sign-in hint when signed out; "Make my key" shows the new key once.
+// iPhone Shortcut key (More → Quick add → iPhone): sign-in hint when signed out; "Make my key" shows the new key once.
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -7,16 +7,15 @@ vi.mock("@/sync/shortcutKey", () => ({ newShortcutKey }));
 
 import { I18nProvider } from "@/i18n/provider";
 import { setStatus } from "@/sync/status";
-import { IosShortcut } from "./IosShortcut";
+import { ShortcutKey } from "./IosShortcut";
 
 const status = { known: true, email: "a@example.com", pending: 0, lastSyncedAt: null, lastError: null };
 const open = () => {
   render(
     <I18nProvider>
-      <IosShortcut />
+      <ShortcutKey />
     </I18nProvider>,
   );
-  fireEvent.click(screen.getByText("iPhone: save from a Shortcut"));
 };
 
 beforeEach(() => {
@@ -29,7 +28,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe("IosShortcut", () => {
+describe("ShortcutKey", () => {
   it("asks a signed-out user to sign in, with no key button", () => {
     setStatus({ ...status, state: "signed_out", email: null });
     open();

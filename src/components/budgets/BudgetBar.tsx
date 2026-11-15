@@ -8,6 +8,7 @@ import type { EntriesData } from "@/features/entries/useEntries";
 import type { BudgetRow } from "@/features/budgets/budgetRows";
 import { useLocale, useMoney } from "@/i18n/provider";
 import { categoryName } from "@/lib/entries";
+import { toBanglaDigits } from "@/lib/money";
 
 const BAR = {
   ok: "[&_[data-slot=progress-indicator]]:bg-green-600 dark:[&_[data-slot=progress-indicator]]:bg-green-500",
@@ -20,9 +21,10 @@ const TEXT = { ok: "text-muted-foreground", near: "text-amber-700 dark:text-ambe
 export function useBudgetLine() {
   const t = useTranslations("budgets");
   const { formatMoney } = useMoney();
+  const { banglaDigits } = useLocale();
   return ({ progress: p }: BudgetRow) => {
     if (p.status === "over") return t("over", { amount: formatMoney(-p.left) });
-    if (p.status === "near" && p.daysLeft !== null) return t("leftDays", { amount: formatMoney(p.left), days: p.daysLeft });
+    if (p.status === "near" && p.daysLeft !== null) return t("leftDays", { amount: formatMoney(p.left), days: banglaDigits ? toBanglaDigits(String(p.daysLeft)) : p.daysLeft });
     return t("left", { amount: formatMoney(p.left) });
   };
 }

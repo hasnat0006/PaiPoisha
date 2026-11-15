@@ -36,9 +36,6 @@
     "bangla": "বাংলা",
     "english": "English",
     "monthStart": "Month starts on",
-    "digits": "Digits",
-    "digitsBangla": "Bangla (১২৩)",
-    "digitsEnglish": "English (123)",
     "darkMode": "Dark mode"
   },
   "entries": {
@@ -81,10 +78,8 @@
     "icon": "Icon",
     "colorN": "Colour {n}",
     "iconN": "Icon {n}",
-    "moveUp": "Move up",
-    "moveDown": "Move down",
     "dragHandle": "Drag to reorder",
-    "dragInstructions": "To pick up a category, press Space. Use the arrow keys to move it, Space to drop it, Escape to cancel.",
+    "dragInstructions": "To pick up an item, press Space. Use the arrow keys to move it, Space to drop it, Escape to cancel.",
     "dragPicked": "Picked up {name}",
     "dragMoved": "{name} moved",
     "dragDropped": "{name} dropped",
@@ -176,6 +171,9 @@
     "period": "Period",
     "allTime": "All time",
     "byMonth": "By month",
+    "customRange": "Custom dates",
+    "from": "From",
+    "to": "To",
     "type": "Type",
     "allTypes": "All types",
     "wallet": "Wallet",
@@ -206,24 +204,9 @@
     "saved": "Budget saved",
     "removed": "Budget removed"
   },
-  "pwa": {
-    "install": "Install the app",
-    "iosSteps": "In Safari, tap Share, then “Add to Home Screen”. Installing also keeps your data safe from being cleared."
-  },
-  "quickAdd": {
-    "title": "Quick add",
-    "intro": "Open the add screen in one tap, already filled in. Add &amount=150&cat=transport to the link to pre-fill more.",
-    "copy": "Copy",
-    "copied": "Link copied",
-    "copyManually": "Press and hold the link to copy it",
-    "androidTitle": "Android: home-screen shortcut",
-    "android": "After installing the app, press and hold its icon. Drag “Add expense” (or Add income / Transfer) onto the home screen. One tap then opens the add screen."
-  },
   "shortcut": {
-    "title": "iPhone: save from a Shortcut",
     "intro": "Add an expense from the home screen without opening the app: title, amount, category, then Save. It uses your last-used wallet and needs internet. The entry shows up here after the next sync.",
     "signIn": "Sign in with Google above to use the iPhone Shortcut.",
-    "step1": "1. Make your key and copy it.",
     "makeKey": "Make my key",
     "keyLabel": "Shortcut key",
     "keyNote": "The key is shown only once. Making a new key stops the old one.",
@@ -231,9 +214,7 @@
     "copied": "Key copied",
     "copyManually": "Press and hold the key to copy it",
     "keyError": "Couldn’t make a key. Check the internet and try again.",
-    "step2": "2. Tap Install Shortcut, then paste the key when the iPhone asks for it.",
-    "install": "Install Shortcut",
-    "step3": "3. Add the Shortcut to the home screen, the Action Button or Back Tap."
+    "install": "Install Shortcut"
   },
   "welcome": {
     "point1": "Cash, bKash, Nagad, Rocket and bank in one place",
@@ -311,5 +292,28 @@
     "yoursBody": "You are responsible for what you enter and for keeping your Google account and phone secure.",
     "changesTitle": "Changes",
     "changesBody": "We may update the app, this policy or these terms. When we do, we'll change the date at the top of this page."
+  },
+  "homeScreen": {
+    "title": "Add to home screen",
+    "intro": "Put PaiPoisha on your home screen like a normal app: it opens in one tap, full screen, and works without internet.",
+    "pick": "Which phone do you use?",
+    "android": "Android",
+    "iphone": "iPhone",
+    "next": "Next",
+    "done": "Done",
+    "stepOf": "Step {n} of {total}",
+    "a1Title": "Open the browser menu",
+    "a1Body": "In Chrome, tap the menu (⋮) at the top right.",
+    "a2Title": "Tap “Install app”",
+    "a2Body": "Tap “Install app” or “Add to Home screen”. Or tap the button below to do it in one step.",
+    "installNow": "Install now",
+    "a3Title": "Open it from the home screen",
+    "a3Body": "Tap Install. The PaiPoisha icon appears on your home screen; open the app from there.",
+    "i1Title": "Tap the Share button",
+    "i1Body": "Open this page in Safari and tap Share (the square with an arrow) at the bottom of the screen.",
+    "i2Title": "Tap “Add to Home Screen”",
+    "i2Body": "Scroll down the list and tap “Add to Home Screen”, then tap Add.",
+    "i3Title": "Open it from the home screen",
+    "i3Body": "The PaiPoisha icon appears on your home screen. Open the app from there; installing also keeps your data from being cleared."
   }
 }

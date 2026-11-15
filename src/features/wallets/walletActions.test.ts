@@ -6,7 +6,7 @@ import type { Transaction } from "@/db/types";
 import { walletBalances } from "@/lib/balances";
 import { deleteCategory, saveCategory, setHidden } from "../categories/categoryActions";
 import type { EntriesData } from "../entries/useEntries";
-import { adjustBalance, canArchive, canDelete, deleteWallet, moveWallet, saveWallet, setArchived } from "./walletActions";
+import { adjustBalance, canArchive, canDelete, deleteWallet, saveWallet, saveWalletOrder, setArchived } from "./walletActions";
 
 /** Same shape the useEntries hook builds. */
 async function load(): Promise<EntriesData> {
@@ -99,7 +99,8 @@ describe("wallet rules", () => {
 
   it("reorders wallets", async () => {
     await saveWallet({ ...bkash }, await load());
-    await moveWallet((await load()).activeWallets, 1, -1);
+    const [cash, bk] = (await load()).activeWallets;
+    await saveWalletOrder([bk, cash]); // bKash dragged to the top
     expect((await load()).activeWallets.map((w) => w.name)).toEqual(["bKash", "Cash"]);
   });
 });

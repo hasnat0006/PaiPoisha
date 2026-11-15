@@ -1,17 +1,18 @@
 "use client";
 
-// Wallets screen (spec §2): balances, total, reorder, add / edit / adjust / archive.
+// Wallets screen (spec §2): balances, total, drag to rank (like categories), add / edit / adjust / archive.
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { MoveButtons } from "@/components/common/MoveButtons";
+import { notify } from "@/components/common/notify";
 import { PageHeader } from "@/components/common/PageHeader";
 import { LoadError, LoadingRows } from "@/components/common/ScreenState";
+import { SortableList } from "@/components/common/SortableList";
 import { CategoryIcon } from "@/components/entries/CategoryIcon";
 import { Button } from "@/components/ui/button";
 import type { Wallet } from "@/db/types";
 import { useEntries } from "@/features/entries/useEntries";
-import { moveWallet } from "@/features/wallets/walletActions";
+import { saveWalletOrder } from "@/features/wallets/walletActions";
 import { useLocale, useMoney } from "@/i18n/provider";
 import { totalBalance, walletBalances } from "@/lib/balances";
 
@@ -67,14 +68,12 @@ export default function WalletsPage() {
         <div className="text-2xl font-semibold">{money(totalBalance(state.activeWallets, balances))}</div>
       </section>
 
-      <ul className="divide-y rounded-xl border">
-        {state.activeWallets.map((w, i) => (
-          <li key={w.id} className="flex items-center gap-1 pl-3">
-            {row(w)}
-            <MoveButtons index={i} count={state.activeWallets.length} onMove={(dir) => moveWallet(state.activeWallets, i, dir)} />
-          </li>
-        ))}
-      </ul>
+      <SortableList
+        list={state.activeWallets}
+        label={(w) => w.name}
+        render={row}
+        onReorder={(list) => saveWalletOrder(list).catch(() => notify.error(t("common.saveError")))}
+      />
 
       <Button className="min-h-11 text-base" onClick={() => edit(null)}>
         {t("wallets.add")}

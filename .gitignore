@@ -12,6 +12,7 @@
 
 # testing
 /coverage
+/.claude/launch.json
 
 # next.js
 /.next/
@@ -44,3 +45,6 @@ next-env.d.ts
 
 # local working notes for AI sessions (not shared)
 /memory/
+
+# promo video project (local only)
+/promo/

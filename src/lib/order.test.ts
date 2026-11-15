@@ -1,13 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { move, sortOrderChanges } from "./order";
-
-describe("move", () => {
-  it("swaps with the neighbour and ignores moves past either end", () => {
-    expect(move(["a", "b", "c"], 1, -1)).toEqual(["b", "a", "c"]);
-    expect(move(["a", "b", "c"], 2, 1)).toEqual(["a", "b", "c"]);
-    expect(move(["a", "b", "c"], 0, -1)).toEqual(["a", "b", "c"]);
-  });
-});
+import { sortOrderChanges } from "./order";
 
 describe("sortOrderChanges", () => {
   it("renumbers 0..n and returns only rows that changed", () => {

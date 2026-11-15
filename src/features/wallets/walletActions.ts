@@ -7,7 +7,7 @@ import { insertRow, softDelete, updateRow } from "@/db/repo";
 import type { Transaction, Wallet } from "@/db/types";
 import { adjustmentFor } from "@/lib/balances";
 import { isValidAmount, type Paisa } from "@/lib/money";
-import { move, sortOrderChanges } from "@/lib/order";
+import { sortOrderChanges } from "@/lib/order";
 import type { EntriesData } from "../entries/useEntries";
 
 export const WALLET_NAME_MAX = 30;
@@ -62,8 +62,8 @@ export async function adjustBalance(w: Wallet, appBalance: Paisa, real: Paisa, d
   return true;
 }
 
-/** Move a wallet up/down among the given list (active wallets, in order) and save the new order. */
-export async function moveWallet(list: Wallet[], index: number, dir: -1 | 1): Promise<void> {
-  const changes = sortOrderChanges(move(list, index, dir));
+/** Save a dragged order of the active wallets (writes only the rows that moved). */
+export async function saveWalletOrder(list: Wallet[]): Promise<void> {
+  const changes = sortOrderChanges(list);
   await db.transaction("rw", db.wallets, () => Promise.all(changes.map((c) => updateRow<Wallet>("wallets", c.id, { sort_order: c.sort_order }))));
 }
