@@ -333,7 +333,7 @@
   },
   "admin": {
     "title": "Admin dashboard",
-    "denied": "This page is only for admins. Sign in with an admin account.",
+    "denied": "This page needs an admin login. You can’t access it.",
     "range": "Time range",
     "days": "{count} days",
     "users": "Users",

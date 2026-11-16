@@ -29,8 +29,10 @@ describe("admin dashboard", () => {
   it("shows nothing but a notice to someone who isn't an admin", async () => {
     api.admin = false;
     renderAdmin();
-    expect(await screen.findByText(/only for admins/)).toBeTruthy();
+    expect(await screen.findByText(/needs an admin login/)).toBeTruthy();
     expect(screen.queryByText("Users")).toBeNull();
+    expect(screen.queryByRole("heading")).toBeNull(); // no title
+    expect(screen.queryAllByRole("button")).toHaveLength(0); // no range or other controls
     expect(screen.queryByRole("navigation")).toBeNull();
   });
 

@@ -30,9 +30,8 @@ export default function AdminPage() {
   const pct = (part: number, whole: number) => num(whole ? Math.round((part / whole) * 100) : 0);
 
   const body = () => {
-    if (state.status === "loading") return <LoadingRows />;
     if (state.status === "error") return <LoadError onRetry={retry} />;
-    if (state.status === "denied") return <p className="py-12 text-center text-muted-foreground">{t("denied")}</p>;
+    if (state.status !== "ready") return null;
     const { stats, suggestions } = state;
     const sum = (k: Series) => stats.daily.reduce((a, d) => a + d[k], 0);
     const cards: [string, string, string?][] = [
@@ -91,6 +90,15 @@ export default function AdminPage() {
       </>
     );
   };
+
+  // Until the account is known to be an admin, show nothing of the dashboard: no title, no controls (user, 2026-11-16).
+  if (state.status === "loading" || state.status === "denied") {
+    return (
+      <main className="mx-auto flex w-full max-w-md flex-1 items-center justify-center p-4">
+        {state.status === "loading" ? <LoadingRows /> : <p className="text-center text-lg">{t("denied")}</p>}
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-4 p-4 md:gap-6 md:p-6">
