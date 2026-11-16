@@ -1,9 +1,10 @@
-// Bottom tab bar: Home · Transactions · [+] · Budgets · More, as a floating glass pill above the screen edge
+// Bottom tab bar: Home · Transactions · [+] · Budgets · Settings (the /more/ route, renamed by the user 2026-11-16), as a floating glass pill above the screen edge
 // (user, 2026-11-08). The + is a solid circle in the middle (user, 2026-11-09). The tab bar is the one place
 // allowed round shapes; everything else uses rounded-md (user, 2026-11-09).
 "use client";
 
-import { House, List, Menu, PiggyBank, Plus, type LucideIcon } from "lucide-react";
+// Money-themed icons (user, 2026-11-16): two-way arrows = money in/out, target = budget goal.
+import { ArrowLeftRight, House, Plus, Settings, Target, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -11,11 +12,11 @@ import { useTranslations } from "next-intl";
 type Tab = { href: string; key: "home" | "transactions" | "budgets" | "more"; icon: LucideIcon; match: string[] };
 const LEFT: Tab[] = [
   { href: "/", key: "home", icon: House, match: ["/"] },
-  { href: "/transactions/", key: "transactions", icon: List, match: ["/transactions"] },
+  { href: "/transactions/", key: "transactions", icon: ArrowLeftRight, match: ["/transactions"] },
 ];
 const RIGHT: Tab[] = [
-  { href: "/budgets/", key: "budgets", icon: PiggyBank, match: ["/budgets"] },
-  { href: "/more/", key: "more", icon: Menu, match: ["/more", "/wallets", "/categories"] },
+  { href: "/budgets/", key: "budgets", icon: Target, match: ["/budgets"] },
+  { href: "/more/", key: "more", icon: Settings, match: ["/more", "/wallets", "/categories"] },
 ];
 
 /** `onAdd` is undefined until the data has loaded; the + then shows disabled, so the bar never shifts. */

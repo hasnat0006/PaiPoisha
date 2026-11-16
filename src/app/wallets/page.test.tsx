@@ -37,7 +37,8 @@ describe("wallets screen", () => {
     await total("৳0");
 
     await click("Add wallet");
-    await click("bKash");
+    fireEvent.change(await screen.findByLabelText("Wallet name"), { target: { value: "bKash" } });
+    await click("Mobile banking"); // provider defaults to bKash
     fireEvent.change(screen.getByLabelText("Opening balance"), { target: { value: "500" } });
     await click("Save");
     await total("৳500");

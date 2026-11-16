@@ -13,6 +13,7 @@ import { BudgetBar } from "@/components/budgets/BudgetBar";
 import { SpendingCard } from "@/components/home/SpendingCard";
 import { SyncIcon } from "@/components/sync/SyncIcon";
 import { useOpenEntry } from "@/components/shell/AppShell";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { budgetRows } from "@/features/budgets/budgetRows";
 import { useEntries } from "@/features/entries/useEntries";
@@ -41,24 +42,13 @@ export default function HomePage() {
     );
   }
 
-  if (state.entries.length === 0) {
-    return (
-      <main className="mx-auto flex w-full max-w-md flex-col items-center gap-3 p-4 py-16 text-center">
-        <h1 className="text-2xl font-semibold">{t("app.name")}</h1>
-        <p className="text-muted-foreground">{t("home.empty")}</p>
-        <Button className="min-h-11 px-6 text-base" onClick={() => openEntry(null)}>
-          {t("home.addFirst")}
-        </Button>
-      </main>
-    );
-  }
-
   const period = periodKey ? periodFromKey(periodKey, state.startDay) : getPeriod(new Date(), state.startDay);
   const ctx = totalsCtx(state.categories);
   const periodEntries = state.entries.filter((e) => inPeriod(e.occurred_at, period));
   const { income, spent, net } = periodTotals(periodEntries, ctx);
   const balances = walletBalances(state.wallets, state.entries);
   const total = totalBalance(state.activeWallets, balances);
+  const noEntries = state.entries.length === 0; // wallets and balances still show (user, 2026-11-16)
   const alerts = budgetRows(state, period).filter((r) => r.progress.status !== "ok");
   const values = [formatMoney(income), formatMoney(spent), formatMoney(net, { signed: true })];
   // Bigger numbers (user, 2026-11-09): as large as the narrowest card allows, up to 20 px, one size for all three so
@@ -83,11 +73,14 @@ export default function HomePage() {
         </div>
         <SyncIcon />
       </div>
-      <section className="grid grid-cols-3 gap-2 text-center">
-        {stat(t("home.income"), values[0], green)}
-        {stat(t("home.spent"), values[1], red)}
-        {stat(t("home.net"), values[2], net < 0 ? red : green)}
-      </section>
+      {/* All three at ৳0 is just noise, above all for a new user (user, 2026-11-16). */}
+      {(income !== 0 || spent !== 0) && (
+        <section className="grid grid-cols-3 gap-2 text-center">
+          {stat(t("home.income"), values[0], green)}
+          {stat(t("home.spent"), values[1], red)}
+          {stat(t("home.net"), values[2], net < 0 ? red : green)}
+        </section>
+      )}
 
       <section>
         <Link href="/wallets/" className="block">
@@ -108,10 +101,27 @@ export default function HomePage() {
               </li>
             );
           })}
+          {noEntries && (
+            <li className="shrink-0">
+              <Link href="/wallets/" className="flex h-full min-h-11 items-center gap-2 rounded-xl border border-dashed p-2 px-3 text-sm text-muted-foreground">
+                <Plus className="size-4" aria-hidden />
+                {t("wallets.add")}
+              </Link>
+            </li>
+          )}
         </ul>
       </section>
 
-      <SpendingCard data={state} inPeriod={periodEntries} period={period} />
+      {noEntries && (
+        <section className="flex flex-col items-center gap-3 py-6 text-center">
+          <p className="text-muted-foreground">{t("home.empty")}</p>
+          <Button className="min-h-11 px-6 text-base" onClick={() => openEntry(null)}>
+            {t("home.addFirst")}
+          </Button>
+        </section>
+      )}
+
+      {!noEntries && <SpendingCard data={state} inPeriod={periodEntries} period={period} />}
 
       {alerts.length > 0 && (
         <section className="rounded-xl border px-3 pt-2">
@@ -128,7 +138,7 @@ export default function HomePage() {
         </section>
       )}
 
-      <section>
+      {!noEntries && <section>
         <div className="mb-1 flex items-center justify-between">
           <h2 className="text-sm font-medium text-muted-foreground">{t("home.recent")}</h2>
           <Link href="/transactions/" className="flex min-h-11 items-center text-sm text-primary">
@@ -136,7 +146,7 @@ export default function HomePage() {
           </Link>
         </div>
         <EntryList entries={state.entries.slice(0, 5)} data={state} onOpen={openEntry} />
-      </section>
+      </section>}
     </main>
   );
 }

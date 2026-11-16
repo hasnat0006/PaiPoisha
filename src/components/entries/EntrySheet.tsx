@@ -5,6 +5,7 @@ import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
+import { ConfirmDelete } from "@/components/common/ConfirmDelete";
 import { notify } from "@/components/common/notify";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
@@ -14,10 +15,11 @@ import type { EntriesData } from "@/features/entries/useEntries";
 import { budgetAlert } from "@/features/budgets/budgetRows";
 import { useEntryForm } from "@/features/entries/useEntryForm";
 import { useLocale, useMoney } from "@/i18n/provider";
-import { sortByUsage, type EntryDraft, type EntryError } from "@/lib/entries";
+import { sortByUsage, type EntryDraft, type EntryError, type EntryFields as Fields } from "@/lib/entries";
 import { parseAmount, toBanglaDigits } from "@/lib/money";
 import { useBudgetLine } from "@/components/budgets/BudgetBar";
 import { EntryFields } from "./EntryFields";
+import { EntryPreview } from "./EntryPreview";
 import { NumberPad } from "./NumberPad";
 
 const TYPES: TransactionType[] = ["expense", "income", "transfer"];
@@ -57,6 +59,9 @@ function EntryForm({ data, editing, prefill, close }: Pick<Props, "data" | "edit
   // The pad opens only when the user taps the amount (or fee) (user, 2026-11-08), and steps aside again
   // when they move on, so the fields below fit on small phones.
   const [padOpen, setPadOpen] = useState(false);
+  // Save first shows "check before saving" (user, 2026-11-16); Confirm there does the real save.
+  const [preview, setPreview] = useState<{ row: Fields; again: boolean } | null>(null);
+  const [busy, setBusy] = useState(false);
   const showPad = padOpen || errors.includes("amount") || errors.includes("fee");
   const openPad = (field: "amount" | "fee") => {
     setPadField(field);
@@ -69,13 +74,23 @@ function EntryForm({ data, editing, prefill, close }: Pick<Props, "data" | "edit
     data.entries,
   );
 
+  const review = (again: boolean) => {
+    const row = form.check();
+    if ("errors" in row) return void notify.invalid(t(ERROR_KEY[row.errors[0]]));
+    setPadOpen(false);
+    setPreview({ row, again });
+  };
   const save = async (again: boolean) => {
     let row;
+    setBusy(true);
     try {
       row = await form.save(again);
     } catch {
       return void notify.error(tc("saveError")); // keep the sheet open so nothing typed is lost
+    } finally {
+      setBusy(false);
     }
+    setPreview(null);
     if ("errors" in row) return void notify.invalid(t(ERROR_KEY[row.errors[0]]));
     const alert = budgetAlert(data, row, editing?.id);
     notify.success(t("saved"), alert ? { duration: 4000, description: budgetLine(alert) } : undefined);
@@ -97,8 +112,17 @@ function EntryForm({ data, editing, prefill, close }: Pick<Props, "data" | "edit
   const sum = /[+-]/.test(draft.amount) ? parseAmount(draft.amount) : null;
   const firstError = errors[0] as EntryError | undefined;
 
+  const shell = "flex min-h-0 flex-1 flex-col gap-2 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]";
+  if (preview) {
+    return (
+      <div className={shell}>
+        <EntryPreview row={preview.row} data={data} busy={busy} onEdit={() => setPreview(null)} onConfirm={() => save(preview.again)} />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-2 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+    <div className={shell}>
       <Tabs value={draft.type} onValueChange={(v) => setType(v as TransactionType)}>
         <TabsList className="w-full group-data-horizontal/tabs:h-11">
           {TYPES.map((type) => (
@@ -151,15 +175,21 @@ function EntryForm({ data, editing, prefill, close }: Pick<Props, "data" | "edit
       )}
       <div className="flex gap-2">
         {editing ? (
-          <Button variant="destructive" className="min-h-11 min-w-11" onClick={remove} aria-label={tc("delete")}>
-            <Trash2 className="size-5" />
-          </Button>
+          <ConfirmDelete
+            title={t("deleteTitle")}
+            trigger={
+              <Button variant="destructive" className="min-h-11 min-w-11" aria-label={tc("delete")}>
+                <Trash2 className="size-5" />
+              </Button>
+            }
+            onConfirm={remove}
+          />
         ) : (
-          <Button variant="outline" className="min-h-11 flex-1 text-base" disabled={noTransfer} onClick={() => save(true)}>
+          <Button variant="outline" className="min-h-11 flex-1 text-base" disabled={noTransfer} onClick={() => review(true)}>
             {t("saveAndAdd")}
           </Button>
         )}
-        <Button className="min-h-11 flex-1 text-base" disabled={noTransfer} onClick={() => save(false)}>
+        <Button className="min-h-11 flex-1 text-base" disabled={noTransfer} onClick={() => review(false)}>
           {tc("save")}
         </Button>
       </div>

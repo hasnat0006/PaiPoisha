@@ -25,6 +25,17 @@ const pad = async (keys: string) => {
 /** Texts of the toasts on screen (sonner renders them outside the page tree). */
 const toasts = () => [...document.querySelectorAll("[data-sonner-toast]")].map((el) => el.textContent ?? "");
 
+/** Save → the "check before saving" summary → Confirm. */
+const save = async () => {
+  fireEvent.click(await screen.findByRole("button", { name: "Save" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Confirm" }));
+};
+/** Delete → the "are you sure?" dialog → Delete. */
+const confirmDelete = async () => {
+  fireEvent.click(await screen.findByRole("button", { name: "Delete" }));
+  fireEvent.click(within(await screen.findByRole("alertdialog")).getByRole("button", { name: "Delete" }));
+};
+
 const pickCategory = async (name: string) => {
   fireEvent.click(await screen.findByRole("combobox", { name: "Category" })); // also the tap that makes the pad step aside
   fireEvent.click(await screen.findByRole("option", { name }));
@@ -50,6 +61,14 @@ describe("adding and listing entries", () => {
     fireEvent.click(screen.getByRole("button", { name: "Amount" }));
     expect(screen.getByRole("button", { name: "7" })).toBeTruthy(); // tapping the amount brings it back
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    // the summary shows what will be saved; Edit goes back with everything kept, and nothing is saved yet
+    expect(await screen.findByText("Check before saving")).toBeTruthy();
+    expect(screen.getByText("৳150")).toBeTruthy();
+    expect(screen.getByText(/Expense · Groceries/)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
+    expect((await screen.findByRole("button", { name: "Amount" })).textContent).toBe("৳150");
+    expect(await db.transactions.count()).toBe(0);
+    await save();
 
     const row = await screen.findByRole("button", { name: /Groceries.*Cash.*−৳150/ });
     const [tx] = await db.transactions.toArray();
@@ -58,13 +77,13 @@ describe("adding and listing entries", () => {
     // edit: tap the row, add a digit, save
     fireEvent.click(row);
     await pad("0");
-    fireEvent.click(await screen.findByRole("button", { name: "Save" }));
+    await save();
     await screen.findByRole("button", { name: /−৳1,500/ });
     expect((await db.transactions.get(tx.id))?.amount_paisa).toBe(150000);
 
     // delete, then undo
     fireEvent.click(screen.getByRole("button", { name: /−৳1,500/ }));
-    fireEvent.click(await screen.findByRole("button", { name: "Delete" }));
+    await confirmDelete();
     await screen.findByText("No entries yet");
     expect((await db.transactions.get(tx.id))?.deleted_at).not.toBeNull();
     await act(async () => fireEvent.click(await screen.findByRole("button", { name: "Undo" })));
@@ -82,7 +101,7 @@ describe("adding and listing entries", () => {
     fireEvent.click(screen.getByRole("button", { name: "Add your first expense" }));
     expect((await screen.findByRole("button", { name: "Amount" })).textContent).toContain("75"); // still there
     await pickCategory("Groceries");
-    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    await save();
     await screen.findByRole("button", { name: /Groceries.*−৳75/ });
 
     fireEvent.click(screen.getByRole("button", { name: "Add entry" }));
@@ -123,16 +142,24 @@ describe("adding and listing entries", () => {
     fireEvent.click(await screen.findByRole("button", { name: "Add your first expense" }));
     await pad("150");
     await pickCategory("Groceries");
-    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    await save();
     fireEvent.click(await screen.findByRole("button", { name: /Groceries.*−৳150/ }));
 
     // The next database update (the soft delete) fails, as on a phone that is out of storage.
     const failing = vi.spyOn(Object.getPrototypeOf(db.transactions), "update").mockRejectedValueOnce(new Error("disk full"));
-    fireEvent.click(await screen.findByRole("button", { name: "Delete" }));
+    await confirmDelete();
     await waitFor(() => expect(toasts().join()).toContain("Couldn’t delete. Please try again"));
-    expect(screen.getByRole("button", { name: "Delete" })).toBeTruthy(); // still open, nothing lost
+    expect(screen.getAllByRole("button", { name: "Delete" }).length).toBeGreaterThan(0); // still open, nothing lost
     expect((await db.transactions.toArray())[0].deleted_at).toBeNull();
     failing.mockRestore();
+  });
+
+  it("shows wallets from the start, before any entry", async () => {
+    renderPage();
+    expect(await screen.findByText("Total balance")).toBeTruthy();
+    expect(screen.getByRole("link", { name: /Add wallet/ }).getAttribute("href")).toMatch(/^\/wallets/);
+    expect(screen.getByText("Cash")).toBeTruthy(); // the seeded wallet, before any entry
+    expect(screen.queryByText("Income")).toBeNull(); // Income · Spent · Net hidden while all are ৳0
   });
 
   it("explains that a transfer needs a second wallet", async () => {

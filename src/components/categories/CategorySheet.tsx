@@ -3,6 +3,7 @@
 
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { ConfirmDelete } from "@/components/common/ConfirmDelete";
 import { LookPicker } from "@/components/common/LookPicker";
 import { notify } from "@/components/common/notify";
 import { Button } from "@/components/ui/button";
@@ -96,14 +97,15 @@ function CategoryForm({ category, type, data, done }: Omit<Props, "open" | "onOp
           <Button variant="outline" className="min-h-11 flex-1" onClick={() => run(() => setHidden(category, !category.hidden), category.hidden ? t("shownToast") : t("hiddenToast"))}>
             {category.hidden ? t("show") : t("hide")}
           </Button>
-          <Button
-            variant="destructive"
-            className="min-h-11 flex-1"
-            disabled={!canDeleteCategory(category, data)}
-            onClick={() => run(() => deleteCategory(category, data), t("deleted"), "deleteError")}
-          >
-            {tc("delete")}
-          </Button>
+          <ConfirmDelete
+            title={t("deleteTitle")}
+            trigger={
+              <Button variant="destructive" className="min-h-11 flex-1" disabled={!canDeleteCategory(category, data)}>
+                {tc("delete")}
+              </Button>
+            }
+            onConfirm={() => run(() => deleteCategory(category, data), t("deleted"), "deleteError")}
+          />
         </div>
       )}
       {category && !canDeleteCategory(category, data) && (

@@ -21,6 +21,9 @@ const DIGITS_KEY = "mm.digits";
 export const DEFAULT_LOCALE: Locale = "bn";
 export const TIME_ZONE = "Asia/Dhaka";
 
+/** Named number formats for messages: `{count, number, count}` follows the Bangla-digits setting (a bare `{count}` prints 166, not ১৬৬). */
+export const numberFormats = (banglaDigits: boolean) => ({ number: { count: { numberingSystem: banglaDigits ? "beng" : "latn" } } });
+
 interface LocaleCtx {
   locale: Locale;
   setLocale: (l: Locale) => void;
@@ -91,6 +94,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     store(DIGITS_KEY, v ? "bn" : "en");
   }, []);
 
+  const formats = useMemo(() => numberFormats(banglaDigits), [banglaDigits]);
   const value = useMemo(
     () => ({ locale, setLocale, banglaDigits, setBanglaDigits, ready }),
     [locale, setLocale, banglaDigits, setBanglaDigits, ready],
@@ -98,7 +102,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <Ctx.Provider value={value}>
-      <NextIntlClientProvider locale={locale} messages={MESSAGES[locale]} timeZone={TIME_ZONE}>
+      <NextIntlClientProvider locale={locale} messages={MESSAGES[locale]} timeZone={TIME_ZONE} formats={formats}>
         {children}
       </NextIntlClientProvider>
     </Ctx.Provider>

@@ -46,9 +46,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const entryCount = useLiveQuery(() => db.transactions.count(), []);
   const [skipped, setSkipped] = useState<boolean | null>(null);
+  const onPrivacy = pathname.startsWith("/privacy"); // the policy must open for anyone (Google checks it)
   const gate = welcomeGate({
     configured: syncConfigured(),
-    onCallback: pathname.startsWith("/auth/") || pathname.startsWith("/privacy"), // the policy must open for anyone (Google checks it)
+    onCallback: pathname.startsWith("/auth/"),
     skipped,
     entries: entryCount,
     known: sync.known,
@@ -126,6 +127,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     setOpen(true);
   };
 
+  // Opened from the welcome page or from outside (Google's consent screen): the page alone, no tab bar (user, 2026-11-16).
+  if (onPrivacy && gate !== "hide") return <div className="flex flex-1 flex-col">{children}</div>;
   if (gate === "wait") return null; // a moment on a brand-new phone, so Home doesn't flash before the welcome page
   if (gate === "show") return <Welcome onSkip={skip} />;
 

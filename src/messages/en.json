@@ -18,7 +18,8 @@
     "saveError": "Couldn’t save. Please try again",
     "deleteError": "Couldn’t delete. Please try again",
     "undoError": "Couldn’t undo. Please try again",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "deleteBody": "It will be removed from your records."
   },
   "home": {
     "income": "Income",
@@ -71,7 +72,12 @@
     "deleted": "Entry deleted",
     "loadError": "Couldn’t load your entries",
     "feeLine": "Fee {amount}",
-    "cashWallet": "Cash"
+    "cashWallet": "Cash",
+    "deleteTitle": "Delete this entry?",
+    "checkTitle": "Check before saving",
+    "confirm": "Confirm",
+    "feeLabel": "Fee",
+    "noteLabel": "Note"
   },
   "manage": {
     "color": "Colour",
@@ -90,16 +96,6 @@
     "add": "Add wallet",
     "addTitle": "Add wallet",
     "editTitle": "Edit wallet",
-    "preset": "Quick pick",
-    "presets": {
-      "cash": "Cash",
-      "bkash": "bKash",
-      "nagad": "Nagad",
-      "rocket": "Rocket",
-      "upay": "Upay",
-      "bank": "Bank",
-      "card": "Card"
-    },
     "name": "Wallet name",
     "kind": "Type",
     "kinds": {
@@ -134,7 +130,8 @@
     "hasEntries": "This wallet has entries, so it can only be archived.",
     "archivedTitle": "Archived",
     "added": "Wallet added",
-    "updated": "Wallet updated"
+    "updated": "Wallet updated",
+    "deleteTitle": "Delete {name}?"
   },
   "categories": {
     "title": "Categories",
@@ -153,12 +150,13 @@
     "updated": "Category updated",
     "hiddenToast": "Category hidden",
     "shownToast": "Category shown",
-    "deleted": "Category deleted"
+    "deleted": "Category deleted",
+    "deleteTitle": "Delete this category?"
   },
   "nav": {
     "home": "Home",
     "transactions": "Transactions",
-    "more": "More",
+    "more": "Settings",
     "budgets": "Budgets"
   },
   "periods": {
@@ -202,7 +200,8 @@
     "leftDays": "{amount} left · {days, plural, one {# day} other {# days}} to go",
     "over": "{amount} over",
     "saved": "Budget saved",
-    "removed": "Budget removed"
+    "removed": "Budget removed",
+    "removeTitle": "Remove this budget?"
   },
   "shortcut": {
     "intro": "Add an expense from the home screen without opening the app: title, amount, category, then Save. It uses your last-used wallet and needs internet. The entry shows up here after the next sync.",
@@ -280,7 +279,7 @@
     "othersTitle": "Services we use",
     "othersBody": "We use Google for sign-in, and trusted cloud services to keep your data and run the app. They handle it only to provide this service.",
     "deleteTitle": "Deleting your data",
-    "deleteBody": "Signed in: open More → Delete my account and data. Your account and all its data are removed from our servers at once, and from that phone. Not signed in: your data is only on your phone; clearing this site's data or removing the app deletes it.",
+    "deleteBody": "Signed in: open Settings → Delete my account and data. Your account and all its data are removed from our servers at once, and from that phone. Not signed in: your data is only on your phone; clearing this site's data or removing the app deletes it.",
     "contactTitle": "Contact",
     "contactBody": "Questions or problems? <link>Open an issue on GitHub</link>.",
     "termsTitle": "Terms of use",

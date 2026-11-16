@@ -25,6 +25,7 @@ describe("/add quick-add link", () => {
     expect(await db.transactions.count()).toBe(0); // nothing saved yet
 
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Confirm" })); // after "check before saving"
     await waitFor(async () => expect(await db.transactions.count()).toBe(1));
     expect((await db.transactions.toArray())[0]).toMatchObject({ amount_paisa: 15000, note: "rickshaw" });
   });

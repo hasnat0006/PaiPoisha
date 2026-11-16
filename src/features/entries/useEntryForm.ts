@@ -71,6 +71,14 @@ export function useEntryForm(data: EntriesData, editing: Transaction | null, pre
     setPadField("amount");
   };
 
+  /** Validates without saving (for the preview): the fields that would be saved, or the errors (also shown inline). */
+  const check = (): EntryFields | { errors: EntryError[] } => {
+    const r = buildEntry(draft, new Date(), editing?.occurred_at);
+    if (r.ok) return r.row;
+    setErrors(r.errors);
+    return { errors: r.errors };
+  };
+
   /** Returns the saved fields, or the errors (also shown inline). With `again`, keeps type, wallet and date for the next entry. */
   const save = async (again: boolean): Promise<EntryFields | { errors: EntryError[] }> => {
     const r = buildEntry(draft, new Date(), editing?.occurred_at);
@@ -92,5 +100,5 @@ export function useEntryForm(data: EntriesData, editing: Transaction | null, pre
 
   const remove = () => deleteEntry(editing!.id);
 
-  return { draft, set, setType, padField, setPadField, errors, save, remove };
+  return { draft, set, setType, padField, setPadField, errors, check, save, remove };
 }

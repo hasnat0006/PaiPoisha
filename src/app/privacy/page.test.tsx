@@ -27,5 +27,16 @@ describe("privacy page", () => {
     expect(screen.getByRole("heading", { name: "Terms of use" })).toBeTruthy();
     expect(screen.getByRole("link", { name: "Open an issue on GitHub" }).getAttribute("href")).toContain("github.com");
     expect(screen.queryByText("Skip for now")).toBeNull();
+    expect(screen.queryByRole("navigation")).toBeNull(); // not in the app yet: no tab bar
+  });
+
+  it("keeps the tab bar when opened from inside the app", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://x.supabase.co");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "anon");
+    localStorage.setItem("mm.welcome", "skipped"); // the user is past the welcome page
+    window.history.replaceState({}, "", "/privacy/");
+    render(<I18nProvider><AppShell><PrivacyPage /></AppShell></I18nProvider>);
+    expect(await screen.findByRole("heading", { name: "Privacy & terms" })).toBeTruthy();
+    expect(await screen.findByRole("navigation")).toBeTruthy();
   });
 });

@@ -3,6 +3,7 @@
 
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { ConfirmDelete } from "@/components/common/ConfirmDelete";
 import { notify } from "@/components/common/notify";
 import { FieldSelect } from "@/components/entries/FieldSelect";
 import { Button } from "@/components/ui/button";
@@ -93,9 +94,16 @@ function BudgetForm({ editing, month, data, taken, onOpenChange }: Props) {
         {tc("save")}
       </Button>
       {editing && (
-        <Button variant="destructive" className="min-h-11" onClick={() => run(() => removeBudget(month, editing.category_id), t("removed"))}>
-          {t("remove")}
-        </Button>
+        <ConfirmDelete
+          title={t("removeTitle")}
+          confirmLabel={t("remove")}
+          trigger={
+            <Button variant="destructive" className="min-h-11">
+              {t("remove")}
+            </Button>
+          }
+          onConfirm={() => run(() => removeBudget(month, editing.category_id), t("removed"))}
+        />
       )}
     </div>
   );

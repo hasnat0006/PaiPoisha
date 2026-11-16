@@ -1,4 +1,4 @@
-// Add/edit wallet fields (spec §2): preset, name, type, provider, opening balance, colour, icon.
+// Add/edit wallet fields (spec §2): name, type, provider, opening balance, colour, icon.
 "use client";
 
 import { useTranslations } from "next-intl";
@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { MfsProvider, Wallet, WalletKind } from "@/db/types";
 import type { EntriesData } from "@/features/entries/useEntries";
-import { PRESETS, type PresetKey } from "@/features/wallets/presets";
+import { PRESETS } from "@/features/wallets/presets";
 import { saveWallet, WALLET_NAME_MAX, type WalletFields } from "@/features/wallets/walletActions";
 import { paisaToInput } from "@/lib/entries";
 import { MAX_AMOUNT_PAISA, parseSignedAmount } from "@/lib/money";
@@ -51,14 +51,6 @@ export function WalletForm({ wallet, data, done }: { wallet: Wallet | null; data
 
   return (
     <div className="flex flex-col gap-3">
-      {!wallet && (
-        <ChipGroup
-          label={t("preset")}
-          options={(Object.keys(PRESETS) as PresetKey[]).map((k) => ({ id: k, label: t(`presets.${k}`) }))}
-          value={null}
-          onChange={(k) => set({ ...PRESETS[k as PresetKey], name: t(`presets.${k as PresetKey}`) })}
-        />
-      )}
       <Input
         value={d.name}
         maxLength={WALLET_NAME_MAX}

@@ -3,6 +3,7 @@
 
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { ConfirmDelete } from "@/components/common/ConfirmDelete";
 import { notify } from "@/components/common/notify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -91,9 +92,15 @@ export function WalletManage({ wallet, balance, data, done }: Props) {
             {t("archive")}
           </Button>
         )}
-        <Button variant="destructive" className="min-h-11 flex-1" disabled={!deletable} onClick={() => run(() => deleteWallet(wallet, data), t("deleted"), "deleteError")}>
-          {t("delete")}
-        </Button>
+        <ConfirmDelete
+          title={t("deleteTitle", { name: wallet.name })}
+          trigger={
+            <Button variant="destructive" className="min-h-11 flex-1" disabled={!deletable}>
+              {t("delete")}
+            </Button>
+          }
+          onConfirm={() => run(() => deleteWallet(wallet, data), t("deleted"), "deleteError")}
+        />
       </div>
       {!archivable && !wallet.archived && <p className="text-sm text-muted-foreground">{t("lastWallet")}</p>}
       {archivable && !deletable && <p className="text-sm text-muted-foreground">{t("hasEntries")}</p>}
