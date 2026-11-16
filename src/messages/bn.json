@@ -403,6 +403,10 @@
     "errorsTitle": "অ্যাপের ত্রুটি (গত ৩০ দিন)",
     "noErrors": "কোনো ত্রুটি জানানো হয়নি।",
     "errorTimes": "{count} বার",
-    "errorLast": "শেষ {date}"
+    "errorLast": "শেষ {date}",
+    "database": "ডেটাবেসের আকার",
+    "dbSize": "{mb} MB",
+    "dbOf": "ফ্রি {limit} MB-এর {pct}%",
+    "dbWarn": "{pct}% ভরে গেছে: সিঙ্ক বন্ধ হওয়ার আগে দেখুন কী বাড়ছে"
   }
 }

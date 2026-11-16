@@ -10,7 +10,7 @@ const api = vi.hoisted(() => ({ admin: false, setSuggestionStatus: vi.fn(async (
 vi.mock("@/sync/admin", () => ({
   isAdmin: async () => api.admin,
   adminStats: async (days: number): Promise<AdminStats> => ({
-    users: 12, new_users: 3, active_today: 4, active_7: 6, active_30: 9, entries: 1500, multi_wallet_users: 6, budget_users: 3, new_suggestions: 1,
+    users: 12, new_users: 3, active_today: 4, active_7: 6, active_30: 9, entries: 1500, multi_wallet_users: 6, budget_users: 3, new_suggestions: 1, db_bytes: 400 * 1024 * 1024,
     daily: Array.from({ length: days }, (_, i) => ({ day: `2026-10-${String(i + 1).padStart(2, "0")}`, sign_ups: 0, sign_ins: 1, active: i, entries: 2 })),
   }),
   listSuggestions: async () => [{ id: "s1", title: "Loan tracker", body: "Who owes me", status: "new", created_at: "2026-11-15T09:00:00Z" }],
@@ -43,6 +43,8 @@ describe("admin dashboard", () => {
     expect(await screen.findByText("Users")).toBeTruthy();
     expect(screen.getByText("1,500")).toBeTruthy(); // entries logged: a count only
     expect(screen.getByText("50% of users")).toBeTruthy(); // 6 of 12 use 2+ wallets
+    expect(screen.getByText("400 MB")).toBeTruthy(); // database size, red from 70%
+    expect(screen.getByText(/80% full/)).toBeTruthy();
     expect(screen.getByRole("img", { name: /Active users, line chart/ })).toBeTruthy();
     expect(screen.getByText("Loan tracker")).toBeTruthy();
     expect(screen.getByText("TypeError: boom")).toBeTruthy(); // crash reports

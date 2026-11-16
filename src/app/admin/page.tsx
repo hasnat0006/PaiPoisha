@@ -17,6 +17,10 @@ import { toBanglaDigits } from "@/lib/money";
 const RANGES = [7, 30, 90];
 const chip = (on: boolean) => `min-h-11 rounded-md border px-3 text-sm ${on ? "border-foreground bg-foreground text-background" : "text-muted-foreground"}`;
 
+// Free Supabase plan: the database turns read-only at 500 MB and sync stops; the tile turns red at 70%.
+const DB_LIMIT_MB = 500;
+const MB = 1024 * 1024;
+
 export default function AdminPage() {
   const t = useTranslations("admin");
   const { banglaDigits } = useLocale();
@@ -35,7 +39,9 @@ export default function AdminPage() {
     if (state.status !== "ready") return null;
     const { stats, suggestions, errors } = state;
     const sum = (k: Series) => stats.daily.reduce((a, d) => a + d[k], 0);
-    const cards: [string, string, string?][] = [
+    const dbMb = Math.round(stats.db_bytes / MB);
+    const dbPct = Math.round((stats.db_bytes / (DB_LIMIT_MB * MB)) * 100);
+    const cards: [string, string, string?, boolean?][] = [
       [t("users"), num(stats.users), t("newInRange", { count: num(stats.new_users) })],
       [t("activeToday"), num(stats.active_today)],
       [t("active7"), num(stats.active_7)],
@@ -44,15 +50,16 @@ export default function AdminPage() {
       [t("entries"), num(stats.entries), t("newInRange", { count: num(sum("entries")) })],
       [t("multiWallet"), num(stats.multi_wallet_users), t("ofUsers", { pct: pct(stats.multi_wallet_users, stats.users) })],
       [t("budgetUsers"), num(stats.budget_users), t("ofUsers", { pct: pct(stats.budget_users, stats.users) })],
+      [t("database"), t("dbSize", { mb: num(dbMb) }), dbPct >= 70 ? t("dbWarn", { pct: num(dbPct) }) : t("dbOf", { pct: num(dbPct), limit: num(DB_LIMIT_MB) }), dbPct >= 70],
     ];
     return (
       <>
         <section className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          {cards.map(([label, value, note]) => (
-            <div key={label} className="rounded-md border p-3 md:p-4">
+          {cards.map(([label, value, note, warn]) => (
+            <div key={label} className={`rounded-md border p-3 md:p-4 ${warn ? "border-destructive text-destructive" : ""}`}>
               <div className="text-sm text-muted-foreground">{label}</div>
               <div className="mt-1 text-2xl font-semibold tabular-nums md:text-3xl">{value}</div>
-              {note && <div className="mt-1 text-xs text-muted-foreground">{note}</div>}
+              {note && <div className={`mt-1 text-xs ${warn ? "" : "text-muted-foreground"}`}>{note}</div>}
             </div>
           ))}
         </section>

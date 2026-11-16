@@ -403,6 +403,10 @@
     "errorsTitle": "App errors (last 30 days)",
     "noErrors": "No errors reported.",
     "errorTimes": "{count}×",
-    "errorLast": "last {date}"
+    "errorLast": "last {date}",
+    "database": "Database size",
+    "dbSize": "{mb} MB",
+    "dbOf": "{pct}% of the free {limit} MB",
+    "dbWarn": "{pct}% full: find what's growing before sync stops"
   }
 }

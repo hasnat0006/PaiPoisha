@@ -35,6 +35,7 @@ export interface AdminStats {
   multi_wallet_users: number;
   budget_users: number;
   new_suggestions: number;
+  db_bytes: number; // whole database; the free plan stops at 500 MB
   daily: DayStats[];
 }
 

@@ -10,7 +10,7 @@ export function demoStats(days: number): AdminStats {
   });
   return {
     users: 128, new_users: daily.reduce((a, d) => a + d.sign_ups, 0), active_today: daily[days - 1].active,
-    active_7: 61, active_30: 94, entries: 18_240, multi_wallet_users: 71, budget_users: 23, new_suggestions: 2, daily,
+    active_7: 61, active_30: 94, entries: 18_240, multi_wallet_users: 71, budget_users: 23, new_suggestions: 2, db_bytes: 12_400_000, daily,
   };
 }
 
