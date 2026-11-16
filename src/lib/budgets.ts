@@ -6,13 +6,19 @@
 import type { Budget } from "@/db/types";
 import type { Paisa } from "./money";
 
-type B = Pick<Budget, "category_id" | "month" | "limit_paisa" | "deleted_at">;
+type B = Pick<Budget, "category_id" | "month" | "limit_paisa" | "deleted_at" | "updated_at">;
 
 /** The budgets that apply to `monthKey`, and the month they come from (null if none). */
 export function budgetsFor<T extends B>(budgets: T[], monthKey: string): { rows: T[]; fromMonth: string | null } {
   const live = budgets.filter((b) => !b.deleted_at && b.month <= monthKey);
   const fromMonth = live.reduce<string | null>((m, b) => (m === null || b.month > m ? b.month : m), null);
-  return { rows: live.filter((b) => b.month === fromMonth), fromMonth };
+  // Two phones can each copy a month forward before syncing: keep one row per category, the newest.
+  const newest = new Map<string | null, T>();
+  for (const b of live) {
+    const kept = newest.get(b.category_id);
+    if (b.month === fromMonth && (!kept || b.updated_at > kept.updated_at)) newest.set(b.category_id, b);
+  }
+  return { rows: [...newest.values()], fromMonth };
 }
 
 /** The budgets the user sees for a month: limit 0 means "removed". */

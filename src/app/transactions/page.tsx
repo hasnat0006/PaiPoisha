@@ -25,7 +25,7 @@ function fromParams(p: URLSearchParams): Filters {
   const type = p.get("type");
   return {
     ...NO_FILTERS,
-    period: period && /^\d{4}-\d{2}$/.test(period) ? periodFromKey(period, DEFAULT_START_DAY) : null,
+    period: period && /^\d{4}-(0[1-9]|1[0-2])$/.test(period) ? periodFromKey(period, DEFAULT_START_DAY) : null,
     type: type && TYPES.includes(type) ? (type as TransactionType) : null,
     categoryId: p.get("category"),
   };

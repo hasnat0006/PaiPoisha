@@ -70,7 +70,7 @@ function EntryForm({ data, editing, prefill, close }: Pick<Props, "data" | "edit
   const isTransfer = draft.type === "transfer";
   const noTransfer = isTransfer && data.activeWallets.length < 2;
   const categories = sortByUsage(
-    data.categories.filter((c) => c.type === draft.type && !c.hidden && c.key !== "adjustment"),
+    data.categories.filter((c) => c.type === draft.type && (!c.hidden || c.id === editing?.category_id) && c.key !== "adjustment"),
     data.entries,
   );
 
@@ -124,9 +124,9 @@ function EntryForm({ data, editing, prefill, close }: Pick<Props, "data" | "edit
   return (
     <div className={shell}>
       <Tabs value={draft.type} onValueChange={(v) => setType(v as TransactionType)}>
-        <TabsList className="w-full group-data-horizontal/tabs:h-11">
+        <TabsList className="w-full group-data-horizontal/tabs:h-auto">
           {TYPES.map((type) => (
-            <TabsTrigger key={type} value={type} className="text-base">
+            <TabsTrigger key={type} value={type} className="h-11 text-base">
               {t(type)}
             </TabsTrigger>
           ))}

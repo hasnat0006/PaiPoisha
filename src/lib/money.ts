@@ -29,10 +29,6 @@ export function takaToPaisa(taka: number): Paisa {
   return sign * Math.round(Number((Math.abs(taka) * 100).toPrecision(12)));
 }
 
-export function paisaToTaka(paisa: Paisa): number {
-  return paisa / 100;
-}
-
 /**
  * Parse what the user typed on the amount pad into paisa.
  * Accepts Bangla or ASCII digits, commas, one decimal point per number,

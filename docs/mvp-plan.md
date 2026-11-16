@@ -43,12 +43,12 @@ Recommendation: Supabase, with Google as the login provider. Syncing into the us
 | Google Drive app folder | Google login, then save a data file into a hidden, app-only folder in the user's Drive (`drive.appdata` scope) | Data lives in the user's own Drive; costs you nothing; the scope is non-sensitive, so only basic Google verification | It stores files, not a database: you write all merge and conflict logic; no server-side queries; the folder is deleted if the user removes the app from Drive |
 | Neon | Serverless Postgres only | Good Postgres, generous free tier | No login and no direct browser access, so you need Auth.js plus your own API server, which breaks the "no server" rule above |
 
-**Sync method (local-first, last write wins)**
+**Sync method (local-first, last phone to sync wins)**
 
 1. Every row gets a UUID made on the device, plus `updated_at` and `deleted_at` (deletes are soft, so they sync too).
 2. **Push:** send rows changed on the device since the last sync.
 3. **Pull:** fetch rows whose `updated_at` is newer than the last pull, and write them into Dexie.
-4. If the same row changed in two places, the newer `updated_at` wins. With one person per account, this will almost never happen.
+4. If the same row changed in two places, the last phone to sync wins (it uploads before it downloads), not the newer edit. With one person per account, this will almost never happen; a true "newest edit wins" needs a server-side check and isn't worth it.
 
 The Google Drive option is still useful later as an extra "Back up to my Google Drive" button.
 
@@ -292,7 +292,7 @@ The user should never have to think about sync: every action works offline, and 
 **Rules**
 
 - Each sync pushes local changes first, then pulls remote ones. Rows go up and down in batches of 500.
-- Conflict: the newer `updated_at` wins (last write wins). Times come from the server when saved, so a phone with the wrong clock can't win unfairly.
+- Conflict: the last phone to sync wins, because each sync uploads before it downloads. While a row is waiting to upload, a pull never overwrites it. Times come from the server, so pull positions don't depend on a phone's clock.
 - A failed sync retries after 5 s, 30 s, then 2 min, without bothering the user; the icon turns to Error only after the third try.
 - If the Supabase project is paused or down, the app keeps working locally and syncs once it's back.
 - **Sign-out:** sync first if possible, then wipe the local database, so the next person using the phone sees nothing.

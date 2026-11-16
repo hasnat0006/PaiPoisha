@@ -67,8 +67,9 @@ export async function pull(remote: Remote): Promise<void> {
       await db.transaction("rw", table(t), db.meta, async () => {
         const incoming = rows.map(toLocal);
         const locals = await table(t).bulkGet(incoming.map((r) => r.id));
-        // Skip a row this phone changed later; that edit uploads next.
-        await table(t).bulkPut(incoming.filter((row, j) => !(locals[j]?._dirty && locals[j].updated_at > row.updated_at)));
+        // Skip any row this phone still has to upload: comparing timestamps fails when the server's echo of an
+        // in-flight upload is stamped after a newer local edit, which reverted that edit.
+        await table(t).bulkPut(incoming.filter((_, j) => !locals[j]?._dirty));
         await db.meta.put({ key: cursorKey(t), value: JSON.stringify(cursor) });
       });
       if (rows.length < BATCH) break;
@@ -127,6 +128,12 @@ export async function syncOnce(remote: Remote, known?: Awaited<ReturnType<Remote
   const user = known === undefined ? await remote.user() : known;
   if (!user) return { signedIn: false };
   const owner = await db.meta.get(OWNER_KEY);
+  // Another account's data is still here (its session ended without our sign-out): drop it, never mix accounts.
+  if (owner && owner.value !== user.id) {
+    await db.transaction("rw", [...SYNCED_TABLES.map(table), db.meta], () =>
+      Promise.all([...SYNCED_TABLES.map((t) => table(t).clear()), db.meta.clear()]),
+    );
+  }
   const merged = owner?.value === user.id ? null : await mergeAccount(remote);
   await push(remote, user.id);
   // Recorded only after the upload: if it fails, the next try merges again (it is idempotent).

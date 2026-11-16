@@ -8,7 +8,7 @@ import type { Cursor, Remote, RemoteRow } from "./remote";
 
 export function fakeRemote(user: { id: string; email: string | null } | null = { id: "u1", email: "a@example.com" }) {
   const tables = new Map<SyncedTable, Map<string, RemoteRow>>();
-  let tick = Date.parse("2026-11-08T04:00:00Z");
+  let tick = Date.now(); // real time, like the server: a frozen clock hid the pull-reverts-an-edit bug
   const serverNow = () => new Date((tick += 1000)).toISOString().replace("Z", "123+00:00"); // e.g. …:01.000123+00:00
   const rowsOf = (t: SyncedTable) => tables.get(t) ?? tables.set(t, new Map()).get(t)!;
   const upserts: { table: SyncedTable; count: number }[] = [];

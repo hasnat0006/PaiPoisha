@@ -39,9 +39,9 @@ export default function CategoriesPage() {
     <main className="mx-auto flex w-full max-w-md flex-col gap-4 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
       <PageHeader title={t("categories.title")} />
       <Tabs value={type} onValueChange={(v) => setType(v as CategoryType)}>
-        <TabsList className="w-full group-data-horizontal/tabs:h-11">
-          <TabsTrigger value="expense" className="text-base">{t("entries.expense")}</TabsTrigger>
-          <TabsTrigger value="income" className="text-base">{t("entries.income")}</TabsTrigger>
+        <TabsList className="w-full group-data-horizontal/tabs:h-auto">
+          <TabsTrigger value="expense" className="h-11 text-base">{t("entries.expense")}</TabsTrigger>
+          <TabsTrigger value="income" className="h-11 text-base">{t("entries.income")}</TabsTrigger>
         </TabsList>
       </Tabs>
 

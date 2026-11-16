@@ -45,7 +45,9 @@ export function useEntries(cashName: string | null): State & { retry: () => void
   const data = useLiveQuery(async (): Promise<State> => {
     try {
       const [txs, wallets, categories, budgets, settings] = await Promise.all([
-        db.transactions.orderBy("occurred_at").reverse().toArray(),
+        db.transactions
+          .toArray() // newest first; past-day entries all share noon, so the later-added one goes first
+          .then((rows) => rows.sort((a, b) => b.occurred_at.localeCompare(a.occurred_at) || b.created_at.localeCompare(a.created_at))),
         db.wallets.orderBy("sort_order").toArray(),
         db.categories.orderBy("sort_order").toArray(),
         db.budgets.toArray(),

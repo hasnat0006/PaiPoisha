@@ -81,13 +81,14 @@ describe("pull", () => {
   });
 
   it("saves the server's timestamp as the pull position, not the phone's clock", async () => {
-    const { remote } = fakeRemote();
-    await wallet();
+    const { remote, rowsOf } = fakeRemote();
+    const w = await wallet();
     await push(remote, "u1");
     await pull(remote);
-    const cursor = JSON.parse((await db.meta.get("pull:wallets"))!.value);
-    expect(cursor.updated_at).toBe("2026-11-08T04:00:01.000123+00:00");
-    expect((await db.wallets.toArray())[0].updated_at).toBe("2026-11-08T04:00:01.000Z"); // stored in the app's format
+    const server = rowsOf("wallets").get(w.id)!.updated_at;
+    expect(server).toMatch(/\.\d{3}123\+00:00$/);
+    expect(JSON.parse((await db.meta.get("pull:wallets"))!.value).updated_at).toBe(server);
+    expect((await db.wallets.get(w.id))!.updated_at).toBe(new Date(server).toISOString()); // stored in the app's format
   });
 
   it("does not overwrite a local row that is dirty and newer", async () => {
@@ -98,6 +99,23 @@ describe("pull", () => {
     await updateRow<Wallet>("wallets", w.id, { name: "Edited here" });
     await pull(remote);
     expect((await db.wallets.get(w.id))!.name).toBe("Edited here");
+  });
+
+  it("keeps an edit made while the previous edit uploads (pull never reverts a dirty row)", async () => {
+    const { remote, rowsOf } = fakeRemote();
+    const w = await wallet("first");
+    await syncOnce(remote);
+    await updateRow<Wallet>("wallets", w.id, { name: "second" });
+    remote.beforeUpsert = async () => {
+      remote.beforeUpsert = undefined;
+      await new Promise((r) => setTimeout(r, 5)); // the edit gets a later timestamp
+      await updateRow<Wallet>("wallets", w.id, { name: "third" });
+    };
+    await syncOnce(remote);
+    expect((await db.wallets.get(w.id))!).toMatchObject({ name: "third", _dirty: 1 });
+    await syncOnce(remote);
+    expect(rowsOf("wallets").get(w.id)!.name).toBe("third");
+    expect(await pendingCount()).toBe(0);
   });
 
   it("brings deletes from another phone", async () => {
@@ -164,6 +182,22 @@ describe("first sync of an account on a phone (spec §1 merge)", () => {
     const second = await syncOnce(remote);
     expect(first.signedIn && first.merged).toBeTruthy();
     expect(second.signedIn && second.merged).toBeNull();
+  });
+
+  it("drops the previous account's data when a different account signs in without a sign-out", async () => {
+    const a = fakeRemote({ id: "u1", email: "a@example.com" });
+    const w = await wallet("A's wallet");
+    await syncOnce(a.remote);
+    await updateRow<Wallet>("wallets", w.id, { name: "A's edit" }); // dirty, then A's session ends
+
+    const b = fakeRemote({ id: "u2", email: "b@example.com" });
+    const bWallet = { ...a.rowsOf("wallets").get(w.id)!, id: "wb", user_id: "u2", name: "B's wallet" };
+    b.rowsOf("wallets").set("wb", bWallet);
+    await syncOnce(b.remote);
+
+    expect(b.rowsOf("wallets").has(w.id)).toBe(false);
+    expect((await db.wallets.toArray()).map((x) => x.name)).toEqual(["B's wallet"]);
+    expect((await db.meta.get("user_id"))!.value).toBe("u2");
   });
 
   it("does nothing when signed out", async () => {

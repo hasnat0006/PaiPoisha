@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { budgetProgress, budgetsFor } from "./budgets";
 import { periodFromKey } from "./period";
 
-const b = (month: string, category_id: string | null, limit_paisa: number, deleted_at: string | null = null) => ({
-  month, category_id, limit_paisa, deleted_at,
+const b = (month: string, category_id: string | null, limit_paisa: number, deleted_at: string | null = null, updated_at = "2026-11-01T00:00:00.000Z") => ({
+  month, category_id, limit_paisa, deleted_at, updated_at,
 });
 
 describe("budgetsFor (copy-forward)", () => {
@@ -21,6 +21,12 @@ describe("budgetsFor (copy-forward)", () => {
   it("returns nothing before the first budget, and ignores deleted rows", () => {
     expect(budgetsFor(rows, "2026-08")).toEqual({ rows: [], fromMonth: null });
     expect(budgetsFor([b("2026-10", "food", 1, "2026-10-02T00:00:00Z"), ...rows], "2026-10").fromMonth).toBe("2026-09");
+  });
+
+  it("keeps one row per category, the newest, when two phones both copied a month forward", () => {
+    const older = b("2026-12", "food", 600000, null, "2026-12-01T00:00:00.000Z");
+    const newer = b("2026-12", "food", 0, null, "2026-12-02T00:00:00.000Z"); // removed on the other phone
+    expect(budgetsFor([newer, older, b("2026-12", null, 1), b("2026-12", null, 1)], "2026-12").rows).toEqual([newer, b("2026-12", null, 1)]);
   });
 });
 

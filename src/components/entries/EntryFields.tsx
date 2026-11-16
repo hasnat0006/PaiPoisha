@@ -27,7 +27,8 @@ export function EntryFields({ data, form, categories }: Props) {
   const { locale } = useLocale();
   const { draft, set, errors } = form;
   const today = dhakaDay(new Date());
-  const wallets = data.activeWallets.map((w) => ({ id: w.id, label: w.name, icon: <CategoryIcon name={w.icon} color={w.color} /> }));
+  // An archived wallet the entry already uses stays listed, so the box isn't blank when editing.
+  const wallets = data.wallets.filter((w) => !w.archived || w.id === draft.walletId || w.id === draft.toWalletId).map((w) => ({ id: w.id, label: w.name, icon: <CategoryIcon name={w.icon} color={w.color} /> }));
   const isTransfer = draft.type === "transfer";
   const walletsInvalid = errors.includes("wallets");
 

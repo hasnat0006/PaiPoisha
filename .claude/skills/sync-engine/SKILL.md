@@ -29,12 +29,12 @@ UI ──read/write──▶ Dexie (src/db) ──_dirty rows──▶ src/sync/
 
 1. If not signed in or offline → set the status and stop.
 2. **Push:** for each table in `SYNCED_TABLES` order, read rows with `_dirty = 1`, strip `_dirty`, `upsert` in batches of 500 (`onConflict: "id"`). On success, set `_dirty = 0` **only if `updated_at` hasn't changed since you read it** (the user may have edited during the push).
-3. **Pull:** read `meta.last_pull_at`. For each table, `select * where updated_at > last_pull_at order by updated_at` in pages of 500. Write into Dexie, except a local row that is `_dirty` and newer.
+3. **Pull:** read `meta.last_pull_at`. For each table, `select * where updated_at > last_pull_at order by updated_at` in pages of 500. Write into Dexie, except any local row that is `_dirty` (it uploads next; comparing timestamps reverted in-flight edits).
 4. Save the **server's** largest `updated_at` seen as `last_pull_at` (never the phone's clock).
 
 ## Conflicts
 
-Last write wins on `updated_at`. The server sets `updated_at` with a trigger, so a wrong phone clock can't win. Deletes are rows with `deleted_at`, so they sync like edits.
+The last phone to sync wins (push runs before pull), not the newest edit. The server sets `updated_at` with a trigger, so pull positions never depend on a phone clock. Deletes are rows with `deleted_at`, so they sync like edits.
 
 ## Triggers and retries
 
@@ -52,7 +52,7 @@ On first run, call `navigator.storage.persist()`. On iOS, data is only reliably 
 
 ## Tests (required)
 
-Use fake-indexeddb plus a mocked Supabase client. Cover: push marks rows clean; an edit during a push stays dirty; pull doesn't overwrite a newer dirty local row; deletes sync; paging over 500 rows; `last_pull_at` uses the server time; sign-out wipes Dexie.
+Use fake-indexeddb plus a mocked Supabase client. Cover: push marks rows clean; an edit during a push stays dirty; pull doesn't overwrite a dirty local row; deletes sync; paging over 500 rows; `last_pull_at` uses the server time; sign-out wipes Dexie.
 
 ## Never
 
