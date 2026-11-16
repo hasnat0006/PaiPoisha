@@ -1,9 +1,11 @@
 // iPhone Shortcut (step 8b): saves an expense without opening the app (migrations 0003, 0006).
-// More → "iPhone Shortcut" opens a step-by-step guide (user, 2026-11-16): make your key, install, add an expense,
-// the Back Tap tip, and how to change the key. Signed-in users only; hidden on Android (iPhone-only feature).
+// More → "iPhone Shortcut" opens a step-by-step guide (user, 2026-11-16): make your key, install, paste the key,
+// add an expense, the Back Tap tip, and changing the key, with the user's marked-up iPhone screenshots.
+// /shortcut/ shows every step on one page. Signed-in users only; hidden on Android (iPhone-only feature).
 "use client";
 
-import { ChevronRight, Download, Hand, KeyRound, ListChecks, RefreshCw, Zap, type LucideIcon } from "lucide-react";
+import { ChevronRight, ClipboardPaste, Download, Hand, KeyRound, ListChecks, RefreshCw, Zap, type LucideIcon } from "lucide-react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
@@ -74,18 +76,67 @@ export function ShortcutKey() {
   );
 }
 
-type StepId = "key" | "install" | "run" | "backTap" | "changeKey";
-const STEPS: { id: StepId; icon: LucideIcon }[] = [
-  { id: "key", icon: KeyRound },
-  { id: "install", icon: Download },
-  { id: "run", icon: Zap },
-  { id: "backTap", icon: Hand },
-  { id: "changeKey", icon: RefreshCw },
+type StepId = "key" | "install" | "paste" | "run" | "backTap" | "changeKey";
+/** Each step's sub-steps (messages `<id>1`, `<id>2`, …) and the marked-up screenshot for each, in public/shortcut/. */
+const STEPS: { id: StepId; icon: LucideIcon; shots: (string | null)[] }[] = [
+  { id: "key", icon: KeyRound, shots: ["key-make", "key-copy"] },
+  { id: "install", icon: Download, shots: ["install"] },
+  { id: "paste", icon: ClipboardPaste, shots: ["list", "edit", "text", "pasted"] },
+  { id: "run", icon: Zap, shots: ["run", null] },
+  { id: "backTap", icon: Hand, shots: ["backtap-search", "backtap-double", "backtap-pick"] },
+  { id: "changeKey", icon: RefreshCw, shots: [null, null] },
 ];
-/** iPhone screenshots per step, in public/shortcut/ (the user sends them). */
-const SHOTS: Partial<Record<StepId, string[]>> = {};
+export const SHORTCUT_STEP_COUNT = STEPS.length;
 
-/** More tab row + the guide sheet. Not on Android, and not in a build without the server. */
+/**
+ * One step: numbered sub-steps, each with its screenshot. `live` (the More sheet) shows the real key buttons
+ * instead of pictures of them; the full-guide page shows the pictures.
+ */
+export function ShortcutStep({ index, live }: { index: number; live: boolean }) {
+  const t = useTranslations("shortcut");
+  const { banglaDigits } = useLocale();
+  const digits = (n: number) => (banglaDigits ? toBanglaDigits(String(n)) : String(n));
+  const { id, icon: Icon, shots } = STEPS[index];
+  const action: Partial<Record<StepId, ReactNode>> = {
+    key: live ? <ShortcutKey /> : null,
+    install: (
+      <a href={SHORTCUT_URL} target="_blank" rel="noopener noreferrer" className={buttonVariants({ className: "min-h-11" })}>
+        {t("install")}
+      </a>
+    ),
+  };
+  return (
+    <section className="flex flex-col gap-3">
+      <div className="flex items-center gap-3">
+        <span className="flex size-12 shrink-0 items-center justify-center rounded-md bg-brand/15 text-brand">
+          <Icon className="size-6" aria-hidden />
+        </span>
+        <h3 className="text-base font-semibold">
+          {digits(index + 1)}. {t(`${id}Title`)}
+        </h3>
+      </div>
+      <ol className="flex flex-col gap-4">
+        {shots.map((shot, i) => (
+          <li key={i} className="flex flex-col gap-3">
+            <p className="flex gap-2 text-sm">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold" aria-hidden>
+                {digits(i + 1)}
+              </span>
+              <span>{t(`${id}${i + 1}`)}</span>
+            </p>
+            {i === 0 && action[id]}
+            {shot && !(live && id === "key") && (
+              // eslint-disable-next-line @next/next/no-img-element -- static export: no image optimizer
+              <img src={`/shortcut/${shot}.webp`} alt={t(`${id}${i + 1}`)} width={600} height={1304} loading="lazy" className="mx-auto h-auto max-h-[60dvh] w-auto max-w-full rounded-xl border" />
+            )}
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+/** More tab row + the guide sheet, one step per screen. Not on Android, and not in a build without the server. */
 export function ShortcutGuide({ className }: { className: string }) {
   const t = useTranslations("shortcut");
   const th = useTranslations("homeScreen");
@@ -96,17 +147,6 @@ export function ShortcutGuide({ className }: { className: string }) {
   const [step, setStep] = useState(0);
 
   if (!iosShortcutAvailable() || (typeof navigator !== "undefined" && /android/i.test(navigator.userAgent))) return null;
-
-  const text = (s: string) => <p className="text-sm text-muted-foreground">{s}</p>;
-  const extra: Partial<Record<StepId, ReactNode>> = {
-    key: <ShortcutKey />,
-    install: (
-      <a href={SHORTCUT_URL} target="_blank" rel="noopener noreferrer" className={buttonVariants({ className: "min-h-11" })}>
-        {t("install")}
-      </a>
-    ),
-  };
-  const { id, icon: Icon } = STEPS[step];
   const last = step === STEPS.length - 1;
 
   return (
@@ -130,20 +170,18 @@ export function ShortcutGuide({ className }: { className: string }) {
             </span>
           </DrawerHeader>
 
-          <div className="flex max-h-[75dvh] flex-col gap-4 overflow-y-auto px-4 pb-6">
-            {step === 0 && text(t("intro"))}
-            <section key={id} className="flex animate-in flex-col gap-3 fade-in slide-in-from-right-4 duration-200">
-              <span className="flex size-12 items-center justify-center rounded-md bg-brand/15 text-brand">
-                <Icon className="size-6" aria-hidden />
-              </span>
-              <h3 className="text-base font-semibold">{t(`${id}Title`)}</h3>
-              {text(t(`${id}Body`))}
-              {extra[id]}
-              {SHOTS[id]?.map((src) => (
-                // eslint-disable-next-line @next/next/no-img-element -- static export: no image optimizer
-                <img key={src} src={src} alt={t(`${id}Title`)} loading="lazy" className="mx-auto max-h-[45dvh] w-auto rounded-md border" />
-              ))}
-            </section>
+          <div className="flex max-h-[80dvh] flex-col gap-4 overflow-y-auto px-4 pb-6">
+            {step === 0 && (
+              <>
+                <p className="text-sm text-muted-foreground">{t("intro")}</p>
+                <Link href="/shortcut/" className="text-sm font-medium text-brand underline underline-offset-4" onClick={() => setOpen(false)}>
+                  {t("fullGuide")}
+                </Link>
+              </>
+            )}
+            <div key={step} className="animate-in fade-in slide-in-from-right-4 duration-200">
+              <ShortcutStep index={step} live />
+            </div>
 
             <div className="flex gap-2">
               {step > 0 && (
