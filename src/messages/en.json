@@ -19,7 +19,8 @@
     "deleteError": "Couldn’t delete. Please try again",
     "undoError": "Couldn’t undo. Please try again",
     "notifications": "Notifications",
-    "deleteBody": "It will be removed from your records."
+    "deleteBody": "It will be removed from your records.",
+    "negative": "Make negative or positive"
   },
   "home": {
     "income": "Income",
@@ -275,7 +276,7 @@
     "whereTitle": "Where it is kept",
     "whereBody": "On your phone, in the browser's storage. If you sign in, a copy is kept safely in the cloud so you can use the app on more than one device and get your data back if you lose your phone. Each account can read only its own data.",
     "neverTitle": "What we never do",
-    "neverBody": "No ads, and we never sell your data or share it with anyone. We count page visits anonymously (no cookies, no amounts, nothing that identifies you) to see how the app is used. If you sign in, we also count how many people use the app each day and how many entries are added in total, as plain numbers that never include what you wrote. Suggestions you send from Settings are kept so we can read them.",
+    "neverBody": "No ads, and we never sell your data or share it with anyone. We count page visits anonymously (no cookies, no amounts, nothing that identifies you) to see how the app is used. If you sign in, we also count how many people use the app each day and how many entries are added in total, as plain numbers that never include what you wrote. Suggestions you send from Settings are kept so we can read them. If the app crashes, it sends the error message, the page and the browser type (never your data or who you are) so we can fix it.",
     "othersTitle": "Services we use",
     "othersBody": "We use Google for sign-in, and trusted cloud services to keep your data and run the app. They handle it only to provide this service.",
     "deleteTitle": "Deleting your data",
@@ -373,6 +374,10 @@
     "modes": {
       "daily": "Daily",
       "total": "Cumulative"
-    }
+    },
+    "errorsTitle": "App errors (last 30 days)",
+    "noErrors": "No errors reported.",
+    "errorTimes": "{count}×",
+    "errorLast": "last {date}"
   }
 }

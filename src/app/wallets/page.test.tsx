@@ -1,5 +1,5 @@
 // Roadmap step 3 flows: wallets (add, adjust, archive) and categories (rename, hide) update everywhere.
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { AppShell } from "@/components/shell/AppShell";
 import { Toaster } from "@/components/ui/sonner";
@@ -45,7 +45,9 @@ describe("wallets screen", () => {
     expect(await screen.findByRole("button", { name: /bKash.*bKash.*৳500/ })).toBeTruthy();
 
     await click(/Cash.*৳0/);
-    fireEvent.change(await screen.findByLabelText("Real balance"), { target: { value: "-200" } });
+    fireEvent.change(await screen.findByLabelText("Real balance"), { target: { value: "200" } });
+    fireEvent.click(within(screen.getByLabelText("Real balance").parentElement!).getByRole("button", { name: "Make negative or positive" })); // the iPhone keyboard has no minus
+    expect(screen.getByLabelText("Real balance")).toHaveProperty("value", "-200");
     await click("Adjust");
     await total("৳300");
     const adj = (await db.transactions.toArray())[0];

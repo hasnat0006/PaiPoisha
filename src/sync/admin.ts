@@ -19,6 +19,12 @@ export interface DayStats {
   active: number;
   entries: number;
 }
+export interface ClientError {
+  message: string;
+  page: string;
+  times: number;
+  last_seen: string;
+}
 export interface AdminStats {
   users: number;
   new_users: number;
@@ -85,4 +91,9 @@ export async function listSuggestions(): Promise<Suggestion[]> {
 
 export async function setSuggestionStatus(id: string, status: SuggestionStatus): Promise<void> {
   ok(await client().from("feature_suggestions").update({ status }).eq("id", id));
+}
+
+/** Crash reports of the last 30 days, the same error grouped (migration 0008). */
+export async function adminErrors(): Promise<ClientError[]> {
+  return ok(await client().rpc("admin_errors")) as ClientError[];
 }

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { ConfirmDelete } from "@/components/common/ConfirmDelete";
 import { notify } from "@/components/common/notify";
 import { Button } from "@/components/ui/button";
+import { SignToggle } from "@/components/common/SignToggle";
 import { Input } from "@/components/ui/input";
 import type { Wallet } from "@/db/types";
 import type { EntriesData } from "@/features/entries/useEntries";
@@ -74,6 +75,7 @@ export function WalletManage({ wallet, balance, data, done }: Props) {
               aria-invalid={badAmount}
               className="tabular-nums"
             />
+            <SignToggle value={real} onChange={(v) => { setReal(v); setBadAmount(false); }} />
             <Button variant="outline" className="min-h-11 shrink-0 px-4" onClick={adjust}>
               {t("adjust")}
             </Button>

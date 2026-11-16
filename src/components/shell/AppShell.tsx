@@ -13,6 +13,7 @@ import { useSyncToasts } from "@/components/sync/useSyncToasts";
 import { db } from "@/db/db";
 import type { Transaction } from "@/db/types";
 import { useEntries } from "@/features/entries/useEntries";
+import { startErrorReports } from "@/features/errors/reportErrors";
 import type { EntryDraft } from "@/lib/entries";
 import { WELCOME_KEY, welcomeGate } from "@/lib/welcome";
 import { useServiceWorker } from "@/features/pwa/usePwa";
@@ -65,6 +66,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const swipe = useSwipeTabs();
   useSyncToasts();
   const { resolvedTheme, setTheme } = useTheme();
+
+  useEffect(() => startErrorReports(), []);
 
   useEffect(() => {
     setSkipped(readSkipped()); // eslint-disable-line react-hooks/set-state-in-effect -- browser-only storage, read after hydration

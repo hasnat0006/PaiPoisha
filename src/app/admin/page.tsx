@@ -5,6 +5,7 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { DailyChart, SERIES, type Mode, type Series } from "@/components/admin/DailyChart";
+import { ErrorList } from "@/components/admin/ErrorList";
 import { SuggestionList } from "@/components/admin/SuggestionList";
 import { notify } from "@/components/common/notify";
 import { PageHeader } from "@/components/common/PageHeader";
@@ -32,7 +33,7 @@ export default function AdminPage() {
   const body = () => {
     if (state.status === "error") return <LoadError onRetry={retry} />;
     if (state.status !== "ready") return null;
-    const { stats, suggestions } = state;
+    const { stats, suggestions, errors } = state;
     const sum = (k: Series) => stats.daily.reduce((a, d) => a + d[k], 0);
     const cards: [string, string, string?][] = [
       [t("users"), num(stats.users), t("newInRange", { count: num(stats.new_users) })],
@@ -84,6 +85,11 @@ export default function AdminPage() {
             {t("suggestions")} {stats.new_suggestions > 0 && <span className="text-sm font-normal text-muted-foreground">· {t("newCount", { count: num(stats.new_suggestions) })}</span>}
           </h2>
           <SuggestionList items={suggestions} num={num} onStatus={(id, s) => setStatus(id, s).catch(() => notify.error(t("statusError")))} />
+        </section>
+
+        <section className="flex flex-col gap-3">
+          <h2 className="text-lg font-semibold">{t("errorsTitle")}</h2>
+          <ErrorList items={errors} num={num} />
         </section>
 
         <p className="text-xs text-muted-foreground">{t("privacyNote")}</p>

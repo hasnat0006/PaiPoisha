@@ -15,6 +15,7 @@ vi.mock("@/sync/admin", () => ({
   }),
   listSuggestions: async () => [{ id: "s1", title: "Loan tracker", body: "Who owes me", status: "new", created_at: "2026-11-15T09:00:00Z" }],
   setSuggestionStatus: api.setSuggestionStatus,
+  adminErrors: async () => [{ message: "TypeError: boom", page: "/add/", times: 2, last_seen: "2026-11-16T08:00:00Z" }],
 }));
 
 const renderAdmin = () => render(<I18nProvider><AppShell><AdminPage /></AppShell></I18nProvider>);
@@ -44,6 +45,7 @@ describe("admin dashboard", () => {
     expect(screen.getByText("50% of users")).toBeTruthy(); // 6 of 12 use 2+ wallets
     expect(screen.getByRole("img", { name: /Active users, line chart/ })).toBeTruthy();
     expect(screen.getByText("Loan tracker")).toBeTruthy();
+    expect(screen.getByText("TypeError: boom")).toBeTruthy(); // crash reports
 
     fireEvent.click(screen.getByRole("button", { name: "7 days" }));
     await waitFor(() => expect(screen.getAllByRole("row")).toHaveLength(7)); // the chart's table: one row a day

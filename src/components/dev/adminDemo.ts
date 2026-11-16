@@ -1,5 +1,5 @@
 // Development only: made-up admin totals and suggestions, so the dashboard can be seen without Supabase.
-import type { AdminStats, DayStats, Suggestion } from "@/sync/admin";
+import type { AdminStats, ClientError, DayStats, Suggestion } from "@/sync/admin";
 
 export function demoStats(days: number): AdminStats {
   const today = Date.now();
@@ -19,4 +19,9 @@ export const DEMO_SUGGESTIONS: Suggestion[] = [
   { id: "2", title: "Home screen widget", body: "", status: "new", created_at: "2026-11-14T12:00:00Z" },
   { id: "3", title: "Monthly PDF report", body: "One page with income, spending and budgets for the month.", status: "planned", created_at: "2026-11-10T08:00:00Z" },
   { id: "4", title: "Dark mode", body: "Easier on the eyes at night.", status: "done", created_at: "2026-11-02T08:00:00Z" },
+];
+
+export const DEMO_ERRORS: ClientError[] = [
+  { message: "TypeError: Cannot read properties of undefined (reading 'id') @ EntrySheet (/_next/static/chunks/app.js:1:2040)", page: "/add/", times: 3, last_seen: "2026-11-16T08:00:00Z" },
+  { message: "ChunkLoadError: Loading chunk 812 failed.", page: "/transactions/", times: 1, last_seen: "2026-11-14T10:00:00Z" },
 ];

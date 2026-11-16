@@ -3,26 +3,26 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import type { AdminStats, Suggestion, SuggestionStatus } from "@/sync/admin";
+import type { AdminStats, ClientError, Suggestion, SuggestionStatus } from "@/sync/admin";
 import { syncConfigured } from "@/sync/status";
 
 export type AdminState =
   | { status: "loading" }
   | { status: "denied" } // signed out, not an admin, or no Supabase
   | { status: "error" }
-  | { status: "ready"; stats: AdminStats; suggestions: Suggestion[] };
+  | { status: "ready"; stats: AdminStats; suggestions: Suggestion[]; errors: ClientError[] };
 
 const demo = process.env.NODE_ENV === "development" && !syncConfigured();
 
 async function load(days: number): Promise<AdminState> {
   if (demo) {
     const m = await import("@/components/dev/adminDemo");
-    return { status: "ready", stats: m.demoStats(days), suggestions: m.DEMO_SUGGESTIONS };
+    return { status: "ready", stats: m.demoStats(days), suggestions: m.DEMO_SUGGESTIONS, errors: m.DEMO_ERRORS };
   }
   const api = await import("@/sync/admin");
   if (!(await api.isAdmin())) return { status: "denied" };
-  const [stats, suggestions] = await Promise.all([api.adminStats(days), api.listSuggestions()]);
-  return { status: "ready", stats, suggestions };
+  const [stats, suggestions, errors] = await Promise.all([api.adminStats(days), api.listSuggestions(), api.adminErrors()]);
+  return { status: "ready", stats, suggestions, errors };
 }
 
 export function useAdmin(days: number) {

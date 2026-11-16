@@ -7,6 +7,7 @@ import { LookPicker } from "@/components/common/LookPicker";
 import { notify } from "@/components/common/notify";
 import { ChipGroup } from "@/components/entries/ChipGroup";
 import { Button } from "@/components/ui/button";
+import { SignToggle } from "@/components/common/SignToggle";
 import { Input } from "@/components/ui/input";
 import type { MfsProvider, Wallet, WalletKind } from "@/db/types";
 import type { EntriesData } from "@/features/entries/useEntries";
@@ -75,14 +76,18 @@ export function WalletForm({ wallet, data, done }: { wallet: Wallet | null; data
       )}
       <label className="flex flex-col gap-1 text-sm text-muted-foreground">
         {t("opening")}
-        <Input
-          inputMode="decimal"
-          value={d.opening}
-          onChange={(e) => set({ opening: e.target.value })}
-          placeholder="0"
-          aria-invalid={error === "opening"}
-          className="tabular-nums"
-        />
+        <span className="flex gap-2">
+          <Input
+            inputMode="decimal"
+            value={d.opening}
+            onChange={(e) => set({ opening: e.target.value })}
+            placeholder="0"
+            aria-invalid={error === "opening"}
+            className="tabular-nums"
+          />
+          {/* After the input: a label points at its first control, which must stay the text box. */}
+          <SignToggle value={d.opening} onChange={(opening) => set({ opening })} />
+        </span>
       </label>
       <LookPicker color={d.color} icon={d.icon} onChange={(c) => set(c)} />
       {error && (
