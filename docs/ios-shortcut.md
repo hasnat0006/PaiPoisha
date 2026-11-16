@@ -7,7 +7,7 @@ It talks to two database functions from `supabase/migrations/0003_shortcut.sql` 
 - `shortcut_list`: the pop-up texts in the user's language, their expense categories and wallets, and the defaults
 - `shortcut_add`: saves the expense (chosen wallet and day; empty = last-used wallet, today) and returns `{ ok, message }`
 
-Both need the user's personal key (More → Quick add → iPhone → Make my key).
+Both need the user's personal key (More → iPhone Shortcut → step 1, Make my key). The same sheet walks users through installing from the iCloud link, running it, the Back Tap tip and changing the key (`ShortcutGuide`, `src/components/sync/IosShortcut.tsx`).
 The `apikey` below is the app's **public** publishable key (it already ships in the web app), not a secret.
 
 ## Values to copy

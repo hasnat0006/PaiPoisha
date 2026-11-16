@@ -32,7 +32,7 @@ describe("ShortcutKey", () => {
   it("asks a signed-out user to sign in, with no key button", () => {
     setStatus({ ...status, state: "signed_out", email: null });
     open();
-    expect(screen.getByText(/Sign in with Google above/)).toBeTruthy();
+    expect(screen.getByText(/Sign in with Google at the top of More/)).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Make my key" })).toBeNull();
   });
 

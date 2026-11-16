@@ -1,6 +1,6 @@
 "use client";
 
-// More tab: Account (sign-in, sync), Wallets, Categories, the settings of spec §8 (language — digits follow it —, theme, month start day), add to home screen,
+// More tab: Account (sign-in, sync), Wallets, Categories, the settings of spec §8 (language — digits follow it —, theme, month start day), add to home screen, the iPhone Shortcut guide,
 // suggest a feature, and (admins only) the admin dashboard.
 import { CalendarDays, ChevronRight, Languages, Shapes, ShieldCheck, SunMoon, Wallet } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -12,6 +12,7 @@ import { SwitchKnob } from "@/components/common/SwitchKnob";
 import { AdminLink } from "@/components/feedback/AdminLink";
 import { SuggestFeature } from "@/components/feedback/SuggestFeature";
 import { AccountSection } from "@/components/sync/AccountSection";
+import { ShortcutGuide } from "@/components/sync/IosShortcut";
 import { HomeScreenGuide } from "@/components/shell/HomeScreenGuide";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import type { Theme } from "@/db/types";
@@ -97,6 +98,7 @@ export default function MorePage() {
           </div>
         </li>
         <HomeScreenGuide className={row} />
+        <ShortcutGuide className={row} />
         <li>
           <SuggestFeature className={row} />
         </li>
