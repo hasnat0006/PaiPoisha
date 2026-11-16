@@ -1,6 +1,7 @@
 "use client";
 
-// More tab: Account (sign-in, sync), Wallets, Categories, the settings of spec §8 (language — digits follow it —, theme, month start day), add to home screen.
+// More tab: Account (sign-in, sync), Wallets, Categories, the settings of spec §8 (language — digits follow it —, theme, month start day), add to home screen,
+// suggest a feature, and (admins only) the admin dashboard.
 import { CalendarDays, ChevronRight, Languages, Shapes, ShieldCheck, SunMoon, Wallet } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -8,6 +9,8 @@ import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { notify } from "@/components/common/notify";
 import { SwitchKnob } from "@/components/common/SwitchKnob";
+import { AdminLink } from "@/components/feedback/AdminLink";
+import { SuggestFeature } from "@/components/feedback/SuggestFeature";
 import { AccountSection } from "@/components/sync/AccountSection";
 import { HomeScreenGuide } from "@/components/shell/HomeScreenGuide";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
@@ -95,6 +98,9 @@ export default function MorePage() {
         </li>
         <HomeScreenGuide className={row} />
         <li>
+          <SuggestFeature className={row} />
+        </li>
+        <li>
           <Link href="/privacy/" className={row}>
             <ShieldCheck className="size-5" aria-hidden />
             <span className="flex-1">{t("privacy.title")}</span>
@@ -102,6 +108,7 @@ export default function MorePage() {
           </Link>
         </li>
       </ul>
+      <AdminLink className={row} />
       {DemoDataSection && <DemoDataSection row={row} />}
     </main>
   );

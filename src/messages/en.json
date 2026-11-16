@@ -268,14 +268,14 @@
   },
   "privacy": {
     "title": "Privacy & terms",
-    "updated": "Last updated: 13 November 2026",
+    "updated": "Last updated: 16 November 2026",
     "intro": "PaiPoisha is a free money tracker. Your money records are yours: we keep only what the app needs to work, and we never sell or share them.",
     "storeTitle": "What we store",
     "storeBody": "What you type into the app: entries, wallets, categories, budgets and settings. If you sign in with Google, we also get your name, email address and profile photo from Google. PaiPoisha never connects to your bKash, Nagad, Rocket, bank or card accounts, and never asks for their PINs or passwords: you type the amounts yourself.",
     "whereTitle": "Where it is kept",
     "whereBody": "On your phone, in the browser's storage. If you sign in, a copy is kept safely in the cloud so you can use the app on more than one device and get your data back if you lose your phone. Each account can read only its own data.",
     "neverTitle": "What we never do",
-    "neverBody": "No ads, and we never sell your data or share it with anyone. We count page visits anonymously (no cookies, no amounts, nothing that identifies you) to see how the app is used.",
+    "neverBody": "No ads, and we never sell your data or share it with anyone. We count page visits anonymously (no cookies, no amounts, nothing that identifies you) to see how the app is used. If you sign in, we also count how many people use the app each day and how many entries are added in total, as plain numbers that never include what you wrote. Suggestions you send from Settings are kept so we can read them.",
     "othersTitle": "Services we use",
     "othersBody": "We use Google for sign-in, and trusted cloud services to keep your data and run the app. They handle it only to provide this service.",
     "deleteTitle": "Deleting your data",
@@ -314,5 +314,65 @@
     "i2Body": "Scroll down the list and tap “Add to Home Screen”, then tap Add.",
     "i3Title": "Open it from the home screen",
     "i3Body": "The PaiPoisha icon appears on your home screen. Open the app from there; installing also keeps your data from being cleared."
+  },
+  "suggest": {
+    "row": "Suggest a feature",
+    "title": "Suggest a feature",
+    "intro": "Tell us what would make PaiPoisha better. We read every idea; your name and email are not shown with it.",
+    "signInFirst": "Sign in with Google (Settings → Account) to send a suggestion. This keeps out spam.",
+    "titleLabel": "Title",
+    "titleHint": "e.g. Track money I lent",
+    "bodyLabel": "Details (optional)",
+    "bodyHint": "What should it do, and why would it help you?",
+    "send": "Send",
+    "sending": "Sending…",
+    "sent": "Thanks! Your suggestion was sent",
+    "error": "Couldn’t send. Please try again",
+    "offline": "Sending needs internet",
+    "titleShort": "Write a title of at least 3 letters"
+  },
+  "admin": {
+    "title": "Admin dashboard",
+    "denied": "This page is only for admins. Sign in with an admin account.",
+    "range": "Time range",
+    "days": "{count} days",
+    "users": "Users",
+    "newInRange": "{count} new in this range",
+    "activeToday": "Active today",
+    "active7": "Active, last 7 days",
+    "active30": "Active, last 30 days",
+    "signIns": "Sign-ins",
+    "inRange": "in this range",
+    "entries": "Entries logged",
+    "multiWallet": "Use 2+ wallets",
+    "budgetUsers": "Use budgets",
+    "ofUsers": "{pct}% of users",
+    "chartPick": "Chart",
+    "chartLabel": "{series}, line chart",
+    "series": {
+      "active": "Active users",
+      "sign_ins": "Sign-ins",
+      "sign_ups": "Sign-ups",
+      "entries": "Entries"
+    },
+    "suggestions": "Feature suggestions",
+    "newCount": "{count} new",
+    "filter": "Show",
+    "status": {
+      "all": "All",
+      "new": "New",
+      "planned": "Planned",
+      "done": "Done",
+      "declined": "Declined"
+    },
+    "statusOf": "Status of {title}",
+    "statusError": "Couldn’t change the status. Please try again",
+    "noSuggestions": "No suggestions here yet.",
+    "privacyNote": "Totals only: no one's entries, amounts, names or emails are shown here.",
+    "mode": "View",
+    "modes": {
+      "daily": "Daily",
+      "total": "Cumulative"
+    }
   }
 }

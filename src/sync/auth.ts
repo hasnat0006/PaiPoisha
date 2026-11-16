@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 import { pendingCount } from "./engine";
 import { DRAFT_KEY } from "@/features/entries/entryDraft";
 import { WELCOME_KEY } from "@/lib/welcome";
+import { trackSignIn } from "./admin";
 import { syncNow } from "./runner";
 
 /** Leaves the app for Google; it comes back to /auth/callback/. */
@@ -57,6 +58,7 @@ export async function renderGoogleButton(el: HTMLElement, onDone: (ok: boolean) 
     nonce,
     callback: async ({ credential }) => {
       const { error } = await supabase!.auth.signInWithIdToken({ provider: "google", token: credential, nonce: raw });
+      if (!error) void trackSignIn();
       onDone(!error);
     },
   });
@@ -73,6 +75,7 @@ export async function renderGoogleButton(el: HTMLElement, onDone: (ok: boolean) 
 export async function finishSignIn(): Promise<boolean> {
   if (!supabase) return false;
   const { data } = await supabase.auth.getSession();
+  if (data.session) void trackSignIn();
   return !!data.session;
 }
 

@@ -22,7 +22,10 @@ export function errorText(err: unknown): string {
   return String(err);
 }
 
-export function createRunner(remote: Remote) {
+/** Counts the user as active today for the admin totals (migration 0007); tests pass a no-op. */
+const trackActive = (id: string) => import("./admin").then((m) => m.track(id));
+
+export function createRunner(remote: Remote, onActive: (userId: string) => Promise<void> = trackActive) {
   let current: Promise<void> | null = null;
   let queued: Promise<void> | null = null;
   let fails = 0;
@@ -54,6 +57,7 @@ export function createRunner(remote: Remote) {
       else {
         setStatus({ state: "up_to_date", email: res.email, lastSyncedAt: new Date().toISOString(), lastError: null });
         if (res.merged) emitMerged(res.merged);
+        if (user) void onActive(user.id);
       }
     } catch (err) {
       fails += 1;
