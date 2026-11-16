@@ -136,6 +136,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   if (onPrivacy && gate !== "hide") return <div className="flex flex-1 flex-col">{children}</div>;
   if (gate === "wait") return null; // a moment on a brand-new phone, so Home doesn't flash before the welcome page
   if (gate === "show") return <Welcome onSkip={skip} />;
+  // The Shortcut guide reads like a manual: the page alone, back arrow to More, no tab bar (user, 2026-11-16).
+  if (pathname.startsWith("/shortcut")) return <div className="flex flex-1 flex-col">{children}</div>;
 
   return (
     <Ctx.Provider value={openEntry}>
